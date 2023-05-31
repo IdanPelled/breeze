@@ -1,0 +1,60 @@
+body {
+    margin: 0;
+    display: grid;
+    grid-template-columns: 3fr 2fr; /* Divide the body into two equal columns */
+    grid-template-rows: 100px 1fr; /* Set the header height to 60px and the remaining height to 1fr */
+    min-height: 100vh; /* Ensure a minimum height of the viewport */
+    background-color: #f0f0f0;
+}
+
+header {
+height: 100px; /* Set a fixed height for the header */
+grid-column: 1 / span 2;
+display: flex;
+align-items: center;
+justify-content: space-between;
+padding: 10px;
+background-color: #f0f0f0;
+}
+
+header img {
+    height: 60px; /* Adjust the height as needed */
+}
+
+
+#code-frame {
+    grid-column: 1 / 2; /* Place the code section in the left column */
+    grid-row: 2; /* Place it in the second row */
+}
+
+
+#terminal-frame {
+grid-column: 2 / 3; /* Place the terminal section in the right column */
+grid-row: 2; /* Place it in the second row */
+display: flex;
+align-items: stretch;
+justify-content: center;
+background-color: #87a8a9;
+color: black;
+}
+
+#output {
+width: 100%; /* Take up the entire width of the terminal frame */
+height: 100%; /* Take up the full height of the terminal frame */
+padding: 10px;
+overflow-y: scroll; /* Enable vertical scrolling if needed */
+}
+
+#output p {
+margin: 0;
+padding: 5px 0;
+}
+
+.CodeMirror {
+    height: 100%;
+    overflow: auto;
+}
+
+.CodeMirror-gutters {
+    background-color: #f0f0f0;
+}

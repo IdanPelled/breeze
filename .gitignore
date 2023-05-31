@@ -1,0 +1,38 @@
+# C++
+# Compiled Object files
+*.o
+*.obj
+bin/*
+obj/*
+
+# Precompiled Headers
+*.gch
+*.pch
+
+# Compiled Dynamic libraries
+*.so
+*.dylib
+*.dll
+
+# Compiled Static libraries
+*.a
+*.lib
+
+# Visual Studio Code
+.vscode/
+.settings/
+
+# Python virtual environment
+venv/
+env/
+*.pyc
+__pycache__/
+
+# Compiled Python files
+*.pyc
+
+# macOS
+.DS_Store
+
+# Windows
+Thumbs.db
