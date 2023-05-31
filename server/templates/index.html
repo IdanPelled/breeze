@@ -22,17 +22,21 @@
 <body>
   <header>
     <img src="{{ url_for('static', filename='images/breeze.png') }}">
-    <div>
-      <button onclick="SendCode()">Run</button>
-    </div>
     
   </header>
   
-  <div id="code-frame">
-      <textarea id="code" class="codemirror-textarea"></textarea>
+  <div id="code-frame" class="frame">
+    <div class="frame-header">
+      <p>Source Code</p>
+      <button onclick="SendCode()">Run</button>
+    </div>
+    <textarea id="code" class="codemirror-textarea"></textarea>
   </div>
   
-  <div id="terminal-frame">
+  <div id="terminal-frame" class="frame">
+    <div class="frame-header">
+      <p>Terminal</p>
+    </div>
     <div id="output"></div>
   </div>
   

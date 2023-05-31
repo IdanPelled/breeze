@@ -5,7 +5,7 @@ CodeMirror.defineSimpleMode("pseudo", {
         { regex: /(?:if|else)\b/, token: "keyword" },
         { regex: /"(?:[^\\]|\\.)*?(?:"|$)/, token: "string" },
         { regex: /[0-9]+/, token: "number" },
-        ],
+    ],
     meta: {
         lineComment: "//",
     },
