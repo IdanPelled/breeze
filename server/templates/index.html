@@ -27,7 +27,7 @@
   
   <div id="code-frame" class="frame">
     <div class="frame-header">
-      <p>Source Code</p>
+      <h2>Source Code</h2>
       <button onclick="SendCode()">Run</button>
     </div>
     <textarea id="code" class="codemirror-textarea"></textarea>
@@ -35,10 +35,18 @@
   
   <div id="terminal-frame" class="frame">
     <div class="frame-header">
-      <p>Terminal</p>
+      <h2>Terminal</h2>
+      <button onclick="ClearOutput()">Clear</button>
     </div>
     <div id="output"></div>
   </div>
+
+  <footer>
+    <p>Written by Idan Pelled</p>
+    <p>GitHub</p>
+    <p>All Rights reserved</p>
+
+  </footer>
   
   <!-- CodeMirror -->
   <script src="{{ url_for('static', filename='scripts/code.js') }}"></script>

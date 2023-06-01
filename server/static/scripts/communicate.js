@@ -2,7 +2,7 @@
 const socket = io.connect();
 
 socket.on('output', function(output) {
-    add_output(output);
+    AddOutput(output);
 });
 
 
@@ -11,7 +11,6 @@ function SendCode() {
     var code = codeEditor.getValue();
     var url = window.location.origin + "/execute";
 
-    clear_output();
     fetch(url, {
         method: 'POST',
         body: JSON.stringify({code: code}),
@@ -20,18 +19,18 @@ function SendCode() {
         },
     })
     .then(response => response.text())
-    .then(data => add_output(data))
+    .then(data => AddOutput(data))
     .catch(error => {
         console.error('Error:', error);
     });
 }
 
-function clear_output(content) {
+function ClearOutput() {
     var element = document.getElementById("output");
     element.innerHTML = "";
 }
 
-function add_output(content) {
+function AddOutput(content) {
     var paragraph = document.createElement("p");
     paragraph.textContent = content;
     document.getElementById("output").appendChild(paragraph);
