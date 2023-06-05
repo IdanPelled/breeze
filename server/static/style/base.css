@@ -1,0 +1,45 @@
+:root {
+    --white: #fff;
+    --bg: #f8f8f8;
+    --teal-blue: #21444c;
+    --light-blue: #b0cecd;
+
+    --border: #ddd;
+}
+
+html, body {
+    height: 100%;
+    margin: 0;
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+    justify-content:space-between;
+    background-color:var(--bg);
+}
+
+html {
+    background-color: var(--light-blue);
+}
+
+header {
+    height: 100px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px;
+    background-color: var(--bg);
+}
+
+header img {
+    height: 60px;
+    margin: 0 0 25px 25px;
+}
+
+footer {
+    display: flex;
+    justify-content: space-evenly;
+    
+    background-color: var(--light-blue);
+}

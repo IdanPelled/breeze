@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+
+{% block title %}
+  Editor
+{% endblock %}
+
+{% block head_script %}
+  <!-- socket.io -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.1.2/socket.io.js"></script>
+  <script src="{{ url_for('static', filename='scripts/communicate.js') }}"></script>
+
+  <!-- CodeMirror -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.62.2/codemirror.min.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.62.2/codemirror.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.62.2/addon/mode/simple.min.js"></script>
+  
+  <!-- local -->
+  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style/editor.css') }}">
+  <link rel="icon" href="{{ url_for('static', filename='images/favicon.ico') }}" type="image/x-icon">
+{% endblock %}
+  
+{% block content %}
+  <div id="code-frame" class="frame">
+    <div class="frame-header">
+      <h2>Source Code</h2>
+      <button onclick="SendCode()">Run</button>
+    </div>
+    <textarea id="code" class="codemirror-textarea" style="display: none;"></textarea>
+  </div>
+  
+  <div id="terminal-frame" class="frame" onclick="FocusOnInput()">
+    <div class="frame-header">
+      <h2>Terminal</h2>
+      <button onclick="ClearOutput()">Clear</button>
+    </div>
+    <div id="output"></div>
+    <textarea id="input" oninput="AdjustHeight(this)" onkeydown="HandleKeyPress(event, this)" rows="1"></textarea>
+  </div>
+{% endblock %}
+
+{% block body_script %}
+  <!-- CodeMirror -->
+  <script src="{{ url_for('static', filename='scripts/code.js') }}"></script>
+{% endblock %}

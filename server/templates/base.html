@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Breeze {% block title %}{% endblock %}</title>
+
+  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style/base.css') }}">
+  {% block head_script %}{% endblock %}
+
+</head>
+<body>
+    <header>
+        <img src="{{ url_for('static', filename='images/breeze.png') }}">
+    </header>
+
+  <main>
+    {% block content %}{% endblock %}
+  </main>
+
+  <footer>
+    <p>Written by Idan Pelled</p>
+    <p>GitHub</p>
+    <p>All Rights reserved</p>
+  </footer>
+
+  {% block body_script %}{% endblock %}
+
+</body>
+</html>
