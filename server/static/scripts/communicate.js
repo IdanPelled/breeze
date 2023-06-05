@@ -1,11 +1,3 @@
-
-const socket = io.connect();
-
-socket.on('output', function(output) {
-    AddOutput(output);
-});
-
-
 function SendCode() {
 
     var code = codeEditor.getValue();
@@ -17,21 +9,30 @@ function SendCode() {
         headers: {
             'Content-Type': 'application/json'
         },
-    })
-    .then(response => response.text())
-    .then(data => AddOutput(data))
-    .catch(error => {
-        console.error('Error:', error);
     });
-}
+    const socket = io();
 
-function ClearOutput() {
-    var element = document.getElementById("output");
-    element.innerHTML = "";
+    socket.on('output', (output) => {
+        AddOutput(output);
+    });
+
+    socket.on('end-proggram', (output) => {
+        AddOutput(output);
+        DeleteCookie("execution_token");
+        socket.close();
+    });
 }
 
 function AddOutput(content) {
     var paragraph = document.createElement("p");
+    const out = document.getElementById("output")
+    
     paragraph.textContent = content;
-    document.getElementById("output").appendChild(paragraph);
+    out.appendChild(paragraph);
+    out.scrollTop = out.scrollHeight;
+}
+
+
+function DeleteCookie(cookieName) {
+    document.cookie = cookieName + "=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
 }

@@ -1,8 +1,20 @@
-from routes import routes_app
-from websocket import app, socketio
+from flask import Flask
+from flask_socketio import SocketIO
 
 
-app.register_blueprint(routes_app)
+socketio = SocketIO()
+
+def create_app():
+    app = Flask(__name__)
+    socketio.init_app(app)
+
+    import server.websocket
+    from server.routes import routes_app
+
+    app.register_blueprint(routes_app)
+    return app
+
 
 if __name__ == '__main__':
+    app = create_app()
     socketio.run(app)
