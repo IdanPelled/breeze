@@ -1,9 +1,10 @@
 import subprocess
 from typing import Generator
 
-from . import running, socketio
+from . import connections, socketio
 
-EXE_PATH = '../interpreter/bin/breeze'
+
+EXE_PATH = './interpreter/bin/breeze'
 
 def pass_input(process: subprocess.Popen, data: str) -> None:
     process.stdin.write((data + '\n').encode())
@@ -21,9 +22,10 @@ def run_code(code: str, token: str) -> Generator[str, None, bool]:
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE,
     )
-    
-    running.update({token: process.pid})
+
+    connections.update({token: process})
     return_statuc_code = process.poll()
+    
     while return_statuc_code is None:
         out = read_output(process)
 
@@ -33,11 +35,11 @@ def run_code(code: str, token: str) -> Generator[str, None, bool]:
         return_statuc_code = process.poll()
     
     yield None
-    del running[token]
+    del connections[token]
     yield return_statuc_code == 0
 
+
 def execute_code(code, execution_token):
-    print("executing code")
     generator = run_code(code, execution_token)
     for out in generator:
         if out:
@@ -46,6 +48,6 @@ def execute_code(code, execution_token):
         else:
             success = next(generator)
             if success:
-                socketio.emit("end-proggram", "Proggram completed :)")
+                socketio.emit("end-program", "Program completed :)")
             else:
-                socketio.emit("end-proggram", "Error occurred :(")
+                socketio.emit("end-program", "Error occurred :(")

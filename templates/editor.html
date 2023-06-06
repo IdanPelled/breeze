@@ -18,6 +18,18 @@
   <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style/editor.css') }}">
   <link rel="icon" href="{{ url_for('static', filename='images/favicon.ico') }}" type="image/x-icon">
 {% endblock %}
+
+{% block nav %}
+  <li>
+    <button id="export" onclick="downloadFile()" style="display: none;">Export</button>
+    <h3><label for="export">Export</label></h3>
+  </li>
+
+  <li>
+    <input type="file" id="import" accept=".brz" onchange="openFile(event)" style="display: none;"/>
+    <h3><label for="import">Import</label></h3>
+  </li>
+{% endblock %}
   
 {% block content %}
   <div id="code-frame" class="frame">

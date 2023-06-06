@@ -3,6 +3,7 @@
 <head>
   <title>Breeze {% block title %}{% endblock %}</title>
 
+  <!-- base.css -->
   <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style/base.css') }}">
   {% block head_script %}{% endblock %}
 
@@ -10,6 +11,11 @@
 <body>
     <header>
         <img src="{{ url_for('static', filename='images/breeze.png') }}">
+        <nav>
+          <ul>
+            {% block nav %}{% endblock %}
+          </ul>
+        </nav>
     </header>
 
   <main>
@@ -23,6 +29,7 @@
   </footer>
 
   {% block body_script %}{% endblock %}
+
 
 </body>
 </html>

@@ -8,8 +8,8 @@ def create_app():
     app = Flask(__name__)
     socketio.init_app(app)
 
-    import server.websocket
-    from server.routes import routes_app
+    import breeze.websocket
+    from breeze.routes import routes_app
 
     app.register_blueprint(routes_app)
     return app
