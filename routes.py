@@ -1,6 +1,8 @@
+import os
+import zipfile
 import secrets
 import threading
-from flask import request, render_template, Blueprint, make_response
+from flask import request, render_template, Blueprint, make_response, send_file
 
 from breeze.interpreter import execute_code
 
@@ -31,5 +33,11 @@ def execute():
     response = make_response()
     response.set_cookie('execution_token', execution_token)
     return response
-    
-    
+
+
+
+@routes_app.route('/download', methods=['GET'])
+def download_breeze():
+    folder_path = './interpreter/release/breeze.zip'
+
+    return send_file(folder_path, as_attachment=True)
