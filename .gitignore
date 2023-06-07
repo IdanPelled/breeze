@@ -4,7 +4,6 @@
 *.obj
 interpreter/bin/*
 interpreter/obj/*
-interpreter/release/*
 
 # Precompiled Headers
 *.gch
@@ -37,3 +36,5 @@ __pycache__/
 
 # Windows
 Thumbs.db
+
+*.zip

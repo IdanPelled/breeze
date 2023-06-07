@@ -30,7 +30,8 @@ $(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp
 # Rule to create a zip file with source files
 zip:
 	@mkdir -p $(RELEASE_DIR)
-	cd $(SRC_DIR) && zip -r ../$(ZIP_FILE) ./*
+	cd $(RELEASE_DIR)
+	cd $(SRC_DIR) && zip -r ../$(ZIP_FILE) * && cd ../$(RELEASE_DIR) && zip -u ../$(ZIP_FILE) Makefile build.sh && cd ..
 
 # Clean build files
 clean:
