@@ -1,171 +1,63 @@
-{% extends 'base.html' %}
-
-{% block title %}Documentation{% endblock %}
-
-{% block head_script %}{% endblock %}
-
-{% block content %}
-<h1>Welcome to the Breeze Programming Language Documentation</h1>
-
-<p>Breeze is a fun, kid-friendly programming language. This documentation serves as a guide to help you get started with Breeze, learn its syntax and core concepts, and unleash your creativity by solving problems through coding.</p>
-
-<h2>Table of Contents</h2>
-<!-- Replace the placeholder below with an actual table of contents linking to different sections of the documentation -->
+{% extends 'static_page.jinja2' %}
 
 
-<ul>
-  <li><a href="#installation">Installation and Setup</a></li>
-  <li><a href="#syntax">Syntax and Language Basics</a></li>
-  <li><a href="#core-concepts">Core Concepts and Functions</a></li>
-  <li><a href="#standard-library">Standard Library</a></li>
-  <li><a href="#error-handling">Error Handling and Debugging</a></li>
-  <li><a href="#examples">Examples and Tutorials</a></li>
-  <li><a href="#faq">Frequently Asked Questions</a></li>
-  <li><a href="#glossary">Glossary</a></li>
-  <li><a href="#support">Community and Support</a></li>
-  <li><a href="#updates">Versioning and Updates</a></li>
-  <li><a href="#legal">License and Legal Information</a></li>
-</ul>
+{% block title %}Breeze - Welcome{% endblock %}
 
 
-<h2 id="installation">Installation and Setup</h2>
-<!-- Replace the placeholder below with the installation and setup instructions for Breeze -->
-
-
-<p>Follow these steps to install and set up Breeze:</p>
-<ol>
-  <li>Step 1: ...</li>
-  <li>Step 2: ...</li>
-  <li>Step 3: ...</li>
-</ol>
-
-
-<h2 id="syntax">Syntax and Language Basics</h2>
-<!-- Replace the placeholder below with an explanation of Breeze syntax and language basics -->
-
-
-<p>Breeze uses a simple and intuitive syntax designed for children. Here are the key components of Breeze syntax:</p>
-<ul>
-  <li>Data types: ...</li>
-  <li>Variables: ...</li>
-  <li>Operators: ...</li>
-  <li>Control flow statements: ...</li>
-</ul>
-
-
-<h2 id="core-concepts">Core Concepts and Functions</h2>
-<!-- Replace the placeholder below with explanations of the core concepts and functions in Breeze -->
-
-
-<p>Breeze provides various core concepts and functions that are fundamental to programming. These include:</p>
-<ul>
-  <li>Loops: ...</li>
-  <li>Conditionals: ...</li>
-  <li>Functions: ...</li>
-  <li>Data structures: ...</li>
-</ul>
-
-
-<h2 id="standard-library">Standard Library</h2>
-<!-- Replace the placeholder below with documentation on the standard library functions in Breeze -->
-
-
-<p>Breeze comes with a standard library that provides useful functions and modules. Here are some of the key functions available:</p>
-<ul>
-  <li>Function 1: ...</li>
-  <li>Function 2: ...</li>
-  <li>Function 3: ...</li>
-</ul>
-
-
-<h2 id="error-handling">Error Handling and Debugging</h2>
-<!-- Replace the placeholder below with information on error handling and debugging in Breeze -->
-
-
-<p>Learn how to handle errors and debug your Breeze code with these tips and techniques:</p>
-<ul>
-  <li>Tip 1: ...</li>
-  <li>Tip 2: ...</li>
-  <li>Tip 3: ...</li>
-</ul>
-
-
-<h2 id="examples">Examples and Tutorials</h2>
-<!-- Replace the placeholder below with a collection of examples and tutorials demonstrating Breeze in action -->
-
-
-<p>Get inspired and learn by example! Here are some code examples and tutorials that showcase Breeze's capabilities:</p>
-<ul>
-  <li>Example 1: ...</li>
-  <li>Example 2: ...</li>
-  <li>Tutorial 1: ...</li>
-</ul>
-
-
-<h2 id="faq">Frequently Asked Questions</h2>
-<!-- Replace the placeholder below with a list of frequently asked questions and their answers -->
-
-
-<p>Here are some common questions about Breeze:</p>
-<ul>
-  <li>Question 1: ...</li>
-  <li>Question 2: ...</li>
-  <li>Question 3: ...</li>
-</ul>
-
-
-<h2 id="glossary">Glossary</h2>
-<!-- Replace the placeholder below with a glossary of key terms and definitions specific to Breeze -->
-
-
-<p>Here are some important terms and definitions you may encounter while using Breeze:</p>
-<dl>
-  <dt>Term 1:</dt>
-  <dd>Definition 1.</dd>
-  <dt>Term 2:</dt>
-  <dd>Definition 2.</dd>
-  <dt>Term 3:</dt>
-  <dd>Definition 3.</dd>
-</dl>
-
-
-<h2 id="support">Community and Support</h2>
-<!-- Replace the placeholder below with information on how users can seek support and engage with the Breeze community -->
-
-
-<p>Join the Breeze community to connect with other users, share your projects, and seek help:</p>
-<ul>
-  <li>Forum 1: ...</li>
-  <li>Forum 2: ...</li>
-  <li>Community Slack channel: ...</li>
-</ul>
-
-
-<h2 id="updates">Versioning and Updates</h2>
-<!-- Replace the placeholder below with information on versioning and updates in Breeze -->
-
-
-<p>Breeze is regularly updated with new features and improvements. Stay up to date with the latest releases and learn about version-specific changes:</p>
-<ul>
-  <li>Version 1.0.0: ...</li>
-  <li>Version 1.1.0: ...</li>
-  <li>Version 2.0.0: ...</li>
-</ul>
-
-
-<h2 id="legal">License and Legal Information</h2>
-<!-- Replace the placeholder below with the license and legal information for Breeze -->
-
-
-<p>Breeze is licensed under the XYZ license. For more information about the terms of use and legal details, refer to the following resources:</p>
-<ul>
-  <li>License file: ...</li>
-  <li>Terms of Use: ...</li>
-  <li>Copyright notice: ...</li>
-</ul>
-
-
+{% block menu %}
+  <li><a href=" {{ url_for('routes.documentation') }}">Start Learning</a></li>
+  <li><a href=" {{ url_for('routes.editor') }}">Start Coding</a></li>
 {% endblock %}
 
 
-{% block body_script %}{% endblock %}
+{% block nav %}
+  <li><a href="#syntax">Learn Coding with Simple Syntax</a></li>
+  <li><a href="#playground">Unleash your Creativity</a></li>
+  <li><a href="#interface">Engaging and Interactive Learning</a></li>
+  <li><a href="#benefits">Early Coding Education</a></li>
+  <li><a href="#start-coding">Start Your Coding Adventure</a></li>
+{% endblock %}
+
+
+{% block head_script %}
+  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style/index.css') }}">
+{% endblock %}
+
+
+{% block content %}
+  <h1>Welcome to Breeze</h1>
+  <br/>
+
+  <section>
+    <h2 id="syntax">Simplified Syntax for Easy Learning</h2>
+    <p>Breeze understands that learning a programming language can be daunting for beginners. That's why it utilizes a simplified syntax that makes it easier for young learners to grasp fundamental programming principles. By removing unnecessary complexity, Breeze empowers children to focus on building their coding skills step by step, fostering a solid foundation for their future in technology.</p>
+  </section>
+
+  <section>
+    <h2 id="playground">Web Application: A Playground for Young Coders</h2>
+    <p>Our Breeze web application is specifically crafted to be a playground for kids to unleash their creativity and transform their ideas into reality. With the user-friendly interface, children can write, execute, and visualize their code in real-time. This hands-on approach enables them to see immediate results, making the learning process engaging, exciting, and highly rewarding.</p>
+  </section>
+
+  <section>
+    <h2 id="interface">Interactive Interface for All Ages</h2>
+    <p>At Breeze, we understand the importance of captivating young minds through visually appealing and interactive experiences. Our web app provides an intuitive interface that appeals to children of all ages. From vibrant colors to playful animations, every aspect of the Breeze interface is designed to keep young learners motivated and eager to explore the world of coding.</p>
+  </section>
+
+  <section>
+    <h2 id="benefits">The Added Value of Starting Coding at a Young Age</h2>
+    <p>Introducing coding to children at a young age offers numerous benefits that extend far beyond the realm of programming. Here's why it's essential to set sail into the world of coding with Breeze:</p>
+    <ol>
+      <li><strong>Problem-Solving Skills:</strong> Coding teaches children how to think logically and break down complex problems into smaller, manageable steps.</li>
+      <li><strong>Creativity and Innovation:</strong> Coding encourages creativity and nurtures innovative thinking.</li>
+      <li><strong>Computational Thinking:</strong> Coding fosters computational thinking, a fundamental skill that involves breaking down a problem into logical steps and developing algorithms to solve it.</li>
+      <li><strong>Digital Literacy:</strong> In today's digital age, understanding how computers and technology work is crucial.</li>
+      <li><strong>Future-Proofing Skills:</strong> The demand for individuals with coding skills continues to grow across industries.</li>
+    </ol>
+  </section>
+
+  <section>
+    <h2 id="start-coding">Start Coding</h2>
+    <p>Start your coding journey with Breeze and unlock the endless possibilities of programming.</p>
+  </section>
+
+{% endblock %}

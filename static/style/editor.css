@@ -73,11 +73,14 @@ main {
 
     background-color: var(--white);
     color: var(--teal-blue);
-    border-color: var(--border);
-    border-style:outset;
-    border-radius: 3px;
+    border: 1px solid var(--border);
+    border-radius: 5px;
+}
+
+.frame-header button:hover, .frame-header button:active {
+    border-color: var(--teal-blur);
 }
 
 .frame-header button:active {
-    border-style:inset;
+    border-style: inset;
 }

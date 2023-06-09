@@ -2,25 +2,31 @@
 <html>
 <head>
   <title>Breeze {% block title %}{% endblock %}</title>
+  
+  <!--page icon -->
+  <link rel="icon" href="{{ url_for('static', filename='images/favicon.ico') }}" type="image/x-icon">
 
   <!-- base.css -->
   <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style/base.css') }}">
-  {% block head_script %}{% endblock %}
+  {% block tmpl_head_script %}{% endblock %}
 
 </head>
 <body>
     <header>
+      <a href="{{ url_for('routes.index') }}">
         <img src="{{ url_for('static', filename='images/breeze.png') }}">
-        <nav>
-          <ul>
-            {% block nav %}{% endblock %}
-          </ul>
-        </nav>
+      </a>
+
+      <ul>
+        {% block menu %}{% endblock %}
+      </ul>
     </header>
 
   <main>
-    {% block content %}{% endblock %}
+    {% block tmpl_nav %}{% endblock %}
+    {% block tmpl_content %}{% endblock %}
   </main>
+
 
   <footer>
     <p>Written by Idan Pelled</p>

@@ -13,8 +13,13 @@ def editor():
     return render_template("editor.html")
 
 
+@routes_app.route('/documentation', methods=['GET'])
+def documentation():
+    return render_template("documentation.html")
+
+
 @routes_app.route('/', methods=['GET'])
-def home():
+def index():
     return render_template("index.html")
 
 

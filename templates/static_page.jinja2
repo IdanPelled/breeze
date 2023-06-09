@@ -1,0 +1,23 @@
+{% extends 'base.jinja2' %}
+
+
+{% block tmpl_head_script %}
+  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style/static_page.css') }}">
+  {% block head_script %}{% endblock %}
+{% endblock %}
+
+
+{% block tmpl_nav %}
+<nav>
+  <ul>
+    {% block nav %}{% endblock %}
+  </ul>
+</nav>
+{% endblock %}
+
+
+{% block tmpl_content %}
+  <div id="content">
+    {% block content %}{% endblock %}
+  </div>
+{% endblock %}
