@@ -7,4 +7,4 @@ cd ..
 cd ./server
 pip install -r requirements.txt
 export FLASK_APP=main.py
-flask run 
+flask run -p 9090
