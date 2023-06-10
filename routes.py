@@ -2,7 +2,7 @@ import secrets
 import threading
 from flask import request, render_template, Blueprint, make_response, send_file
 
-from breeze.interpreter import execute_code
+from interpreter import execute_code
 
 
 routes_app = Blueprint('routes', __name__)

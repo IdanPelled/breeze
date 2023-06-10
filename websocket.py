@@ -1,6 +1,6 @@
-from breeze.utils import predicate
-from breeze.interpreter import pass_input
-from . import socketio
+from utils import predicate
+from interpreter import pass_input
+from factory import socketio
 
 @socketio.on('input')
 @predicate

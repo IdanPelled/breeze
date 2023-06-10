@@ -1,7 +1,7 @@
 import subprocess
 from typing import Generator
 
-from . import connections, socketio
+from factory import connections, socketio
 
 
 EXE_PATH = './interpreter/bin/breeze'

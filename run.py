@@ -1,5 +1,5 @@
-from breeze.factory import create_app, socketio
+from factory import create_app, socketio
 
-
-app = create_app()
-socketio.run(app)
+if __name__ == "__main__":
+    app = create_app()
+    socketio.run(app)

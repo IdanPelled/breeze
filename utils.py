@@ -1,4 +1,4 @@
-from . import connections
+from factory import connections
 
 
 def remove_token_prefix(token):
