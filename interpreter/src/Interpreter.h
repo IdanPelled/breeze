@@ -2,6 +2,7 @@
 #include <map>
 #include <iostream>
 #include <string>
+#include <fstream>
 
 #include "Parser.h"
 
@@ -28,7 +29,7 @@ namespace interpreter
 	};
 
 	struct ReturnType {
-		string string;
+		string String;
 		int integer;
 		bool boolean;
 

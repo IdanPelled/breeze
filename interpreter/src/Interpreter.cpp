@@ -93,7 +93,7 @@ ReturnType Interpreter::interprerExpression(parser::Operand exp) {
 			break;
 
 		case VarType::String:
-			ret.string = var.string_val;
+			ret.String = var.string_val;
 			break;
 		}
 		ret.type = var.type;
@@ -105,7 +105,7 @@ ReturnType Interpreter::interprerExpression(parser::Operand exp) {
 		break;
 
 	case parser::Type::STRING:
-		ret.string = exp.string.get_data("value");
+		ret.String = exp.string.get_data("value");
 		ret.type = VarType::String;
 		break;
 
@@ -139,7 +139,7 @@ bool evaluate_equal(ReturnType left, ReturnType right) {
 		return left.boolean && right.boolean;
 
 	case VarType::String:
-		return left.string.compare(right.string) == 0;
+		return left.String.compare(right.String) == 0;
 
 	case VarType::Integer:
 		return left.integer == right.integer;
