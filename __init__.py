@@ -1,4 +1,4 @@
-from .main import socketio
+from .factory import socketio
 import breeze.log
 
 # connections = {
