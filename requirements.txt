@@ -1,5 +1,6 @@
 flask
 flask_socketio
+gevent-websocket
 gunicorn==20.1.0
 eventlet==0.30.2
-gevent-websocket
+uvicorn==0.11.3
