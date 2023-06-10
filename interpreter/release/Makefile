@@ -1,4 +1,4 @@
-# This Makefile is used for the Client localy build breeze
+# This Makefile is used for the Client locally build breeze
 
 # Compiler
 CXX := g++
