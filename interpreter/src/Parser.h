@@ -1,5 +1,6 @@
 #pragma once
 #include <vector>
+#include <numeric>
 #include "Token.h"
 #include "Lexer.h"
 
@@ -32,7 +33,6 @@ namespace parser
 
 
 	struct MulExp {
-		token::Token multiplay;
 		token::Token value;
 	};
 
@@ -42,8 +42,10 @@ namespace parser
 	};
 
 	struct PlusExp {
-		token::Token plus;
 		NumExp num;
+
+		// plus pr minus
+		bool is_plus;
 	};
 
 	struct ArithmeticExp {
@@ -89,19 +91,15 @@ namespace parser
 	};
 
 	struct BlockExp {
-		token::Token open_brackets;
 		vector<Statement> statements;
-		token::Token close_brackets;
 	};
 
 	struct WhenExp {
-		token::Token when_token;
 		BoolExp exp;
-		token::Token do_token;
 		BlockExp when_block;
 
-		token::Token otherwise_token;
-		token::Token otherwise_do_token;
+		bool otherwise;
+		// optional
 		BlockExp otherwise_block;
 	};
 
@@ -120,7 +118,6 @@ namespace parser
 	class Parser {
 	public:
 		Parser(const string& code);
-		inline token::Token next_token();
 		File parseFile();
 	
 	private:
@@ -136,6 +133,11 @@ namespace parser
 		Statement parseStatement();
 		BlockExp parseBlockExp();
 		WhenExp parseWhenExp();
+
+		inline token::Token next_token();
+		token::Token expect_token(vector<token::TokenType> types);
+		token::Token expect_token(token::TokenType type);
+		void throw_unexpected_token(token::TokenType type);
 
 		int index;
 		vector<token::Token> tokens;

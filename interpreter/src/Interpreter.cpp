@@ -21,34 +21,32 @@ Variable Interpreter::get_var(string name) {
 }
 
 int Interpreter::interprerMulExp(parser::MulExp exp) {
-	if (exp.multiplay.get_type() != token::TokenType::MULTIPLY)
-		throw std::invalid_argument("Expecting for token +/-");
-
 	return stoi(exp.value.get_data("value"));
 }
 
 int Interpreter::interprerPlusExp(parser::PlusExp exp) {
-	token::TokenType type = exp.plus.get_type();
-	
-	if (type == token::TokenType::MINUS || type == token::TokenType::PLUS)
-		return interprerNumExp(exp.num);
-
-	throw std::invalid_argument("Expecting for token +/-");
+	return interprerNumExp(exp.num);
 
 }
+
+
 
 int Interpreter::interprerNumExp(parser::NumExp exp) {
 	int ret;
 
 	if (exp.value.get_type() == token::TokenType::IDENTI) {
 		Variable var = get_var(exp.value.get_data("name"));
+		
 		if (var.type != VarType::Integer)
-			throw std::invalid_argument("Variable isnt of type integer");
+			throw std::invalid_argument("Variable must be a number");
+		
 		ret = var.int_val;
 	}
+
 	else
 		ret = stoi(exp.value.get_data("value"));
 	
+
 	for (parser::MulExp mul : exp.multiplys)
 		ret *= interprerMulExp(mul);
 
@@ -63,10 +61,10 @@ int Interpreter::interprerArithmeticExp(parser::ArithmeticExp exp)
 	for (parser::PlusExp plus : exp.pluses) {
 		tmp = interprerPlusExp(plus);
 		
-		if (plus.plus.get_type() == token::TokenType::PLUS)
+		if (plus.is_plus)
 			ret += tmp;
 
-		if (plus.plus.get_type() == token::TokenType::MINUS)
+		else
 			ret -= tmp;
 	}
 
@@ -261,32 +259,22 @@ void Interpreter::interprerAssignment(parser::AssignmentExp exp) {
 		break;
 
 	default:
-		throw std::invalid_argument("Syntax error 2");
+		throw std::invalid_argument("Syntax error");
 	}
 
 	set_vat(var);
 }
 
 void Interpreter::interprerBlock(parser::BlockExp exp) {
-	if (exp.open_brackets.get_type() != token::TokenType::OPEN)
-		throw std::invalid_argument("Syntax error 3");
-
 	for (parser::Statement statement : exp.statements)
 		interprerStatement(statement);
-
-	if (exp.close_brackets.get_type() != token::TokenType::CLOSE)
-		throw std::invalid_argument("Syntax error 4");
 }
 
 void Interpreter::interprerWhen(parser::WhenExp exp) {
-	// std::cout << "## " << getStringFromEnum(exp.when_token.get_type()) << std::endl;
-	if (exp.when_token.get_type() != token::TokenType::WHEN)
-		throw std::invalid_argument("Syntax error 5");
-
 	if (interprerBoolExp(exp.exp))
 		interprerBlock(exp.when_block);
 	
-	else if (exp.otherwise_token.get_type() == token::TokenType::OTHERWISE)
+	else if (exp.otherwise)
 		interprerBlock(exp.otherwise_block);
 }
 
@@ -306,7 +294,7 @@ void Interpreter::interprerStatement(parser::Statement exp) {
 		break;
 
 	default:
-		throw std::invalid_argument("Syntax error 6");
+		throw std::invalid_argument("Syntax error");
 	}
 }
 

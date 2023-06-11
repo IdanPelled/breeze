@@ -1,39 +1,71 @@
-#pragma once
 #include "Parser.h"
 
 using namespace parser;
 
-std::string getStringFromEnum(token::TokenType value) {
-	map<string, token::token_t> keywords_map = {
-	{"{", token::TokenType::OPEN},
-	{"}", token::TokenType::CLOSE},
-	{"when", token::TokenType::WHEN},
-	{"do", token::TokenType::DO},
-	{"otherwise", token::TokenType::OTHERWISE},
-	{"set", token::TokenType::SET},
-	{"to", token::TokenType::TO},
-	{"+", token::TokenType::PLUS},
-	{"-", token::TokenType::MINUS},
-	{"*", token::TokenType::MULTIPLY},
-	{"=", token::TokenType::EQUAL},
-	{">", token::TokenType::GREATER},
-	{"<", token::TokenType::SMALLER},
-	{"var", token::TokenType::IDENTI},
-};
+std::string get_token_name(token::TokenType value) {
+	std::map<std::string, token::TokenType> tokenMap = {
+    {"open", token::TokenType::OPEN},
+    {"close", token::TokenType::CLOSE},
+    {"when", token::TokenType::WHEN},
+    {"do", token::TokenType::DO},
+    {"otherwise", token::TokenType::OTHERWISE},
+    {"yes", token::TokenType::YES},
+    {"no", token::TokenType::NO},
+    {"variable", token::TokenType::IDENTI},
+    {"text", token::TokenType::TEXT},
+    {"number", token::TokenType::NUMBER},
+    {"bool", token::TokenType::BOOL},
+    {"set", token::TokenType::SET},
+    {"to", token::TokenType::TO},
+    {"pluse", token::TokenType::PLUS},
+    {"minus", token::TokenType::MINUS},
+    {"multiply", token::TokenType::MULTIPLY},
+    {"equal", token::TokenType::EQUAL},
+    {"grater", token::TokenType::GREATER},
+    {"smaller", token::TokenType::SMALLER},
+	};
 
-    for (const auto& pair : keywords_map) {
+    for (const auto& pair : tokenMap) {
         if (pair.second == value) {
             return pair.first;
         }
     }
-    return "~"; // Return an empty string if the enum value is not found in the map
+    return "<unnamed token>"; // Return an empty string if the enum value is not found in the map
 }
 
 inline token::Token Parser::next_token() {
 	return tokens[index++];
 }
 
-Parser::Parser(const string& code) : tokens{ lexer::Lexer(code).lex() }, index{ 0 }
+void Parser::throw_unexpected_token(token::TokenType type) {
+	throw std::invalid_argument(
+		"Syntax Error: Unexpected token: \"" + get_token_name(type) + "\"."
+	);
+}
+token::Token Parser::expect_token(vector<token::TokenType> types) {
+	token::Token tk = next_token();
+	vector<string> names = {};
+	bool valid = false;
+
+	for (token::TokenType type: types) {
+		string token_name = get_token_name(type);
+		names.push_back(token_name);
+		
+		if (tk.get_type() == type)
+			valid = true;
+	}
+
+	if (!valid)
+		throw_unexpected_token(tk.get_type());
+	
+	return tk;
+}
+
+token::Token Parser::expect_token(token::TokenType type) {
+	return expect_token(vector<token::TokenType>{type});
+}
+
+Parser::Parser(const string& code) : index { 0 }, tokens { lexer::Lexer(code).lex() }
 {
 	tokens.push_back(token::TokenType::END_OF_TOKENS);
 }
@@ -41,7 +73,7 @@ Parser::Parser(const string& code) : tokens{ lexer::Lexer(code).lex() }, index{ 
 MulExp Parser::parseMulExp() {
 	MulExp ret;
 
-	ret.multiplay = next_token();
+	expect_token(token::TokenType::MULTIPLY);
 	ret.value = next_token();
 
 	return ret;
@@ -63,7 +95,13 @@ NumExp Parser::parseNumExp() {
 PlusExp Parser::parsePlusExp() {
 	PlusExp ret;
 
-	ret.plus = next_token();
+	token::Token tk = expect_token({token::TokenType::PLUS, token::TokenType::MINUS});
+	
+	if (tk.get_type() == token::TokenType::PLUS)
+		ret.is_plus = true;
+	else
+		ret.is_plus = false;
+
 	ret.num = parseNumExp();
 
 	return ret;
@@ -136,7 +174,6 @@ Expression Parser::parseExpression() {
 	default:
 		break;
 	}
-	
 
 	return ret;
 }
@@ -201,18 +238,9 @@ AssignmentExp Parser::parseAssignmentExp() {
 	AssignmentExp ret;
 	
 
-	if (next_token().get_type() != token::TokenType::SET)
-		throw std::invalid_argument("Syntax Error: Expecting keyword \"set\"");
-	
-	token::Token tk = next_token();
-	if (tk.get_type() != token::TokenType::IDENTI)
-		throw std::invalid_argument("Syntax Error: Expecting identifier");
-	
-	ret.identifier = tk;
-
-	if (next_token().get_type() != token::TokenType::TO)
-		throw std::invalid_argument("Syntax Error: Expecting keyword \"to\"");
-	
+	expect_token(token::TokenType::SET);
+	ret.identifier = expect_token(token::TokenType::IDENTI);;
+	expect_token(token::TokenType::TO);
 	ret.value = parseExpression();
 	ret.type = ret.value.type;
 	return ret;
@@ -250,13 +278,13 @@ BlockExp Parser::parseBlockExp() {
 	BlockExp ret;
 	vector<Statement> statements;
 
-	ret.open_brackets = next_token();
+	expect_token(token::TokenType::OPEN);
 
 	while (tokens[index].get_type() != token::TokenType::CLOSE)
 		statements.push_back(parseStatement());
 
 	ret.statements = statements;
-	ret.close_brackets = next_token();
+	expect_token(token::TokenType::CLOSE);
 
 	return ret;
 }
@@ -264,17 +292,20 @@ BlockExp Parser::parseBlockExp() {
 WhenExp Parser::parseWhenExp() {
 	WhenExp ret;
 
-	ret.when_token = next_token();
+	expect_token(token::TokenType::WHEN);
 	ret.exp = parseBoolExp();
-	ret.do_token = next_token();
+	expect_token(token::TokenType::DO);
 	ret.when_block = parseBlockExp();
 
 	if (tokens[index].get_type() == token::TokenType::OTHERWISE) {
-
-		ret.otherwise_token = next_token();
-		ret.otherwise_do_token = next_token();
+		expect_token(token::TokenType::OTHERWISE);
+		expect_token(token::TokenType::DO);
+		ret.otherwise = true;
 		ret.otherwise_block = parseBlockExp();
 	}
+
+	else
+		ret.otherwise = false;
 
 	return ret;
 }
