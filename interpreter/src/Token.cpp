@@ -40,25 +40,25 @@ KeyWord::KeyWord(token_t type) : Token(type)
 {
 }
 
-token_t get_literal_type(string& value) {
-	if (value == "True" || value == "False")
+token_t get_literal_type(const string& value) {
+	if (value == "yes" || value == "no")
 		return TokenType::BOOL;
 
 	if (value[0] == '\"')
-		return TokenType::STR;
+		return TokenType::TEXT;
 
 	if (isdigit(value[0]) || value[0] == '-')
-		return TokenType::INT;
+		return TokenType::NUMBER;
 
 	throw std::invalid_argument("Undifined literal: " + value);
 }
 
-Literal::Literal(string& value) : Token(get_literal_type(value))
+Literal::Literal(const string& value) : Token(get_literal_type(value))
 {
 	data["value"] = value;
 }
 
-Identifier::Identifier(string& name) : Token(TokenType::IDENTI)
+Identifier::Identifier(const string& name) : Token(TokenType::IDENTI)
 {
 	data["name"] = name;
 }

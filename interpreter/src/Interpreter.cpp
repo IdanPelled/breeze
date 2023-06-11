@@ -119,10 +119,10 @@ ReturnType Interpreter::interprerExpression(parser::Operand exp) {
 }
 
 bool Interpreter::evaluate_bool(string s) {
-	if (s.compare("True") == 0)
+	if (s.compare("yes") == 0)
 		return true;
 
-	if (s.compare("False") == 0)
+	if (s.compare("no") == 0)
 		return false;
 
 	throw std::invalid_argument("invalid bool argument");
@@ -223,7 +223,7 @@ void Interpreter::interprerAssignment(parser::AssignmentExp exp) {
 	Variable var;
 
 	if (exp.assignment.get_type() != token::TokenType::ASSIGNMENT)
-		throw std::invalid_argument("Syntax error");
+		throw std::invalid_argument("Syntax error 1");
 
 	var.name = exp.identifier.get_data("name");
 	switch (exp.type)
@@ -264,7 +264,7 @@ void Interpreter::interprerAssignment(parser::AssignmentExp exp) {
 		break;
 
 	default:
-		throw std::invalid_argument("Syntax error");
+		throw std::invalid_argument("Syntax error 2");
 	}
 
 	set_vat(var);
@@ -272,24 +272,24 @@ void Interpreter::interprerAssignment(parser::AssignmentExp exp) {
 
 void Interpreter::interprerBlock(parser::BlockExp exp) {
 	if (exp.open_brackets.get_type() != token::TokenType::OPEN)
-		throw std::invalid_argument("Syntax error");
+		throw std::invalid_argument("Syntax error 3");
 
 	for (parser::Statement statement : exp.statements)
 		interprerStatement(statement);
 
 	if (exp.close_brackets.get_type() != token::TokenType::CLOSE)
-		throw std::invalid_argument("Syntax error");
+		throw std::invalid_argument("Syntax error 4");
 }
 
-void Interpreter::interprerIf(parser::IfExp exp) {
-	if (exp.if_token.get_type() != token::TokenType::IF)
-		throw std::invalid_argument("Syntax error");
+void Interpreter::interprerWhen(parser::WhenExp exp) {
+	if (exp.when_token.get_type() != token::TokenType::WHEN)
+		throw std::invalid_argument("Syntax error 5");
 
 	if (interprerBoolExp(exp.exp))
-		interprerBlock(exp.if_block);
+		interprerBlock(exp.when_block);
 	
-	else if (exp.else_token.get_type() == token::TokenType::ELSE)
-		interprerBlock(exp.else_block);
+	else if (exp.otherwise_token.get_type() == token::TokenType::OTHERWISE)
+		interprerBlock(exp.otherwise_block);
 }
 
 void Interpreter::interprerStatement(parser::Statement exp) {
@@ -299,8 +299,8 @@ void Interpreter::interprerStatement(parser::Statement exp) {
 		interprerAssignment(exp.assignment_statement);
 		break;
 
-	case parser::StatementType::IF_TYPE:
-		interprerIf(exp.if_statement);
+	case parser::StatementType::WHEN_TYPE:
+		interprerWhen(exp.when_statement);
 		break;
 
 	case parser::StatementType::BLOCK_TYPE:
@@ -308,7 +308,7 @@ void Interpreter::interprerStatement(parser::Statement exp) {
 		break;
 
 	default:
-		throw std::invalid_argument("Syntax error");
+		throw std::invalid_argument("Syntax error 6");
 	}
 }
 
@@ -334,10 +334,13 @@ void Interpreter::interprer()
 
 
 int main(int argc, char** argv) {
+	#include <iostream>
+	
 	if (argc == 2) {
 		Interpreter(argv[1]).interprer();
+		std::cout << "ok";
 		return 0;
 	}
-
+	std::cout << "error";
 	return 1;
 }

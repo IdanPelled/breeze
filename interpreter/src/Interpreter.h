@@ -57,7 +57,7 @@ namespace interpreter
 
 		void interprerAssignment(parser::AssignmentExp exp);
 		void interprerBlock(parser::BlockExp exp);
-		void interprerIf(parser::IfExp exp);
+		void interprerWhen(parser::WhenExp exp);
 		void interprerStatement(parser::Statement exp);
 		void interprerFile(parser::File exp);
 

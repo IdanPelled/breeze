@@ -8,7 +8,7 @@ using std::vector;
 namespace parser
 {
 	struct Statement;
-	struct IfExp;
+	struct WhenExp;
 	struct BlockExp;
 	struct BoolExp;
 	struct Expression;
@@ -21,13 +21,13 @@ namespace parser
 	};
 
 	enum class BoolType {
-		QUERY, // if i == j
-		EXPRESSION, // if i
+		QUERY, // when i == j
+		EXPRESSION, // when i
 	};
 
 	enum class StatementType {
 		ASSIGNMENT_TYPE,
-		IF_TYPE,
+		WHEN_TYPE,
 		BLOCK_TYPE,
 	};
 
@@ -96,17 +96,17 @@ namespace parser
 		token::Token close_brackets;
 	};
 
-	struct IfExp {
-		token::Token if_token;
+	struct WhenExp {
+		token::Token when_token;
 		BoolExp exp;
-		BlockExp if_block;
+		BlockExp when_block;
 
-		token::Token else_token;
-		BlockExp else_block;
+		token::Token otherwise_token;
+		BlockExp otherwise_block;
 	};
 
 	struct Statement {
-		IfExp if_statement;
+		WhenExp when_statement;
 		AssignmentExp assignment_statement;
 		BlockExp block_statement;
 
@@ -135,7 +135,7 @@ namespace parser
 		AssignmentExp parseAssignmentExp();
 		Statement parseStatement();
 		BlockExp parseBlockExp();
-		IfExp parseIfExp();
+		WhenExp parseWhenExp();
 
 		int index;
 		vector<token::Token> tokens;

@@ -5,8 +5,6 @@
 
 #include "Token.h"
 
-
-using std::string;
 using std::vector;
 
 namespace lexer
@@ -14,17 +12,17 @@ namespace lexer
 	class Lexer {
 	public:
 		Lexer(const string& row);
-		vector<token::Token> lex();
+		const vector<token::Token> lex();
 
 	private:
-		string next_word();
-		bool is_operator(string& word);
-		bool is_keyword(string& word);
-		bool is_identifier(string& word);
-		bool is_literal(string& word);
+		const string& next_word();
+		bool is_operator(const string& word);
+		bool is_keyword(const string& word);
+		bool is_identifier(const string& word);
+		bool is_literal(const string& word);
 
 
-		token::Token tokenize(string& word);
+		token::Token tokenize(const string& word);
 
 		std::istringstream row;
 	};

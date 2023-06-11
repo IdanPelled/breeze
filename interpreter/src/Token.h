@@ -11,17 +11,17 @@ namespace token
 		// KeyWords:
 		OPEN,
 		CLOSE,
-		IF,
-		ELSE,
-		TRUE,
-		FALSE,
+		WHEN,
+		OTHERWISE,
+		YES,
+		NO,
 
 		// Identifiers:
 		IDENTI,
 
 		// Literals:
-		STR,
-		INT,
+		TEXT,
+		NUMBER,
 		BOOL,
 
 		// Operators
@@ -61,12 +61,12 @@ namespace token
 
 	class Identifier : public Token {
 	public:
-		Identifier(string& name);
+		Identifier(const string& name);
 	};
 
 	class Literal : public Token {
 	public:
-		Literal(string& value);
+		Literal(const string& value);
 	};
 
 	class Operator : public Token {

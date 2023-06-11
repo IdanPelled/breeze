@@ -70,12 +70,12 @@ Expression Parser::parseExpression() {
 		ret.type = Type::IDENTIFIER;
 		break;
 
-	case token::TokenType::INT:
+	case token::TokenType::NUMBER:
 		ret.math_exp = parseArithmeticExp();
 		ret.type = Type::INTEGER;
 		break;
 
-	case token::TokenType::STR:
+	case token::TokenType::TEXT:
 		ret.string = next_token();
 		ret.type = Type::STRING;
 		break;
@@ -86,7 +86,7 @@ Expression Parser::parseExpression() {
 		break;
 
 	default:
-		throw std::invalid_argument("Syntax Error");
+		throw std::invalid_argument("Syntax Error 7");
 	}
 
 	switch (tokens[index].get_type()) {
@@ -132,12 +132,12 @@ Operand Parser::parseOperand() {
 		ret.type = Type::IDENTIFIER;
 		break;
 
-	case token::TokenType::INT:
+	case token::TokenType::NUMBER:
 		ret.math_exp = parseArithmeticExp();
 		ret.type = Type::INTEGER;
 		break;
 
-	case token::TokenType::STR:
+	case token::TokenType::TEXT:
 		ret.string = next_token();
 		ret.type = Type::STRING;
 		break;
@@ -148,7 +148,7 @@ Operand Parser::parseOperand() {
 		break;
 
 	default:
-		throw std::invalid_argument("Syntax Error");
+		throw std::invalid_argument("Syntax Error 8");
 	}
 
 	return ret;
@@ -186,9 +186,9 @@ Statement Parser::parseStatement() {
 
 	switch (tokens[index].get_type())
 	{
-	case token::TokenType::IF:
-		ret.type = StatementType::IF_TYPE;
-		ret.if_statement = parseIfExp();
+	case token::TokenType::WHEN:
+		ret.type = StatementType::WHEN_TYPE;
+		ret.when_statement = parseWhenExp();
 		break;
 
 	case token::TokenType::IDENTI:
@@ -202,7 +202,7 @@ Statement Parser::parseStatement() {
 		break;
 
 	default:
-		throw std::invalid_argument("Syntax Error");
+		throw std::invalid_argument("Syntax Error 9");
 		break;
 	}
 
@@ -224,17 +224,17 @@ BlockExp Parser::parseBlockExp() {
 	return ret;
 }
 
-IfExp Parser::parseIfExp() {
-	IfExp ret;
+WhenExp Parser::parseWhenExp() {
+	WhenExp ret;
 
-	ret.if_token = next_token();
+	ret.when_token = next_token();
 	ret.exp = parseBoolExp();
-	ret.if_block = parseBlockExp();
+	ret.when_block = parseBlockExp();
 
-	if (tokens[index].get_type() == token::TokenType::ELSE) {
+	if (tokens[index].get_type() == token::TokenType::OTHERWISE) {
 
-		ret.else_token = next_token();
-		ret.else_block = parseBlockExp();
+		ret.otherwise_token = next_token();
+		ret.otherwise_block = parseBlockExp();
 	}
 
 	return ret;
