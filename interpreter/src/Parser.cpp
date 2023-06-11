@@ -3,6 +3,32 @@
 
 using namespace parser;
 
+std::string getStringFromEnum(token::TokenType value) {
+	map<string, token::token_t> keywords_map = {
+	{"{", token::TokenType::OPEN},
+	{"}", token::TokenType::CLOSE},
+	{"when", token::TokenType::WHEN},
+	{"do", token::TokenType::DO},
+	{"otherwise", token::TokenType::OTHERWISE},
+	{"set", token::TokenType::SET},
+	{"to", token::TokenType::TO},
+	{"+", token::TokenType::PLUS},
+	{"-", token::TokenType::MINUS},
+	{"*", token::TokenType::MULTIPLY},
+	{"=", token::TokenType::EQUAL},
+	{">", token::TokenType::GREATER},
+	{"<", token::TokenType::SMALLER},
+	{"var", token::TokenType::IDENTI},
+};
+
+    for (const auto& pair : keywords_map) {
+        if (pair.second == value) {
+            return pair.first;
+        }
+    }
+    return "~"; // Return an empty string if the enum value is not found in the map
+}
+
 inline token::Token Parser::next_token() {
 	return tokens[index++];
 }
@@ -173,9 +199,20 @@ BoolExp Parser::parseBoolExp() {
 
 AssignmentExp Parser::parseAssignmentExp() {
 	AssignmentExp ret;
+	
 
-	ret.identifier = next_token();
-	ret.assignment = next_token();
+	if (next_token().get_type() != token::TokenType::SET)
+		throw std::invalid_argument("Syntax Error: Expecting keyword \"set\"");
+	
+	token::Token tk = next_token();
+	if (tk.get_type() != token::TokenType::IDENTI)
+		throw std::invalid_argument("Syntax Error: Expecting identifier");
+	
+	ret.identifier = tk;
+
+	if (next_token().get_type() != token::TokenType::TO)
+		throw std::invalid_argument("Syntax Error: Expecting keyword \"to\"");
+	
 	ret.value = parseExpression();
 	ret.type = ret.value.type;
 	return ret;
@@ -191,7 +228,7 @@ Statement Parser::parseStatement() {
 		ret.when_statement = parseWhenExp();
 		break;
 
-	case token::TokenType::IDENTI:
+	case token::TokenType::SET:
 		ret.type = StatementType::ASSIGNMENT_TYPE;
 		ret.assignment_statement = parseAssignmentExp();
 		break;
@@ -229,11 +266,13 @@ WhenExp Parser::parseWhenExp() {
 
 	ret.when_token = next_token();
 	ret.exp = parseBoolExp();
+	ret.do_token = next_token();
 	ret.when_block = parseBlockExp();
 
 	if (tokens[index].get_type() == token::TokenType::OTHERWISE) {
 
 		ret.otherwise_token = next_token();
+		ret.otherwise_do_token = next_token();
 		ret.otherwise_block = parseBlockExp();
 	}
 

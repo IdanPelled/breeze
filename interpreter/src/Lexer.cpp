@@ -11,15 +11,17 @@ map<string, token::token_t> keywords_map = {
 	{"{", token::TokenType::OPEN},
 	{"}", token::TokenType::CLOSE},
 	{"when", token::TokenType::WHEN},
+	{"do", token::TokenType::DO},
 	{"otherwise", token::TokenType::OTHERWISE},
+	{"set", token::TokenType::SET},
+	{"to", token::TokenType::TO}
 };
 
 map<string, token::token_t> operators_map = {
-	{"=", token::TokenType::ASSIGNMENT},
 	{"+", token::TokenType::PLUS},
 	{"-", token::TokenType::MINUS},
 	{"*", token::TokenType::MULTIPLY},
-	{"==", token::TokenType::EQUAL},
+	{"=", token::TokenType::EQUAL},
 	{">", token::TokenType::GREATER},
 	{"<", token::TokenType::SMALLER},
 
@@ -56,8 +58,7 @@ bool Lexer::is_literal(const string& word) {
 		word == "yes"
 		|| word == "no"
 		|| word[0] == '\"'
-		|| (isdigit(word[0])
-		|| word[0] == '-')
+		|| (isdigit(word[0]) || word[0] == '-')
 	);
 }
 

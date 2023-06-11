@@ -1,6 +1,7 @@
 #pragma once
 #include <string>
 #include <map>
+#include <iostream>
 
 using std::string;
 using std::map;
@@ -12,9 +13,11 @@ namespace token
 		OPEN,
 		CLOSE,
 		WHEN,
+		DO,
 		OTHERWISE,
 		YES,
 		NO,
+
 
 		// Identifiers:
 		IDENTI,
@@ -25,7 +28,8 @@ namespace token
 		BOOL,
 
 		// Operators
-		ASSIGNMENT,
+		SET,
+		TO,
 		PLUS,
 		MINUS,
 		MULTIPLY,

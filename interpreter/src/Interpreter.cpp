@@ -222,9 +222,6 @@ bool Interpreter::interprerBoolExp(parser::BoolExp exp) {
 void Interpreter::interprerAssignment(parser::AssignmentExp exp) {
 	Variable var;
 
-	if (exp.assignment.get_type() != token::TokenType::ASSIGNMENT)
-		throw std::invalid_argument("Syntax error 1");
-
 	var.name = exp.identifier.get_data("name");
 	switch (exp.type)
 	{
@@ -282,6 +279,7 @@ void Interpreter::interprerBlock(parser::BlockExp exp) {
 }
 
 void Interpreter::interprerWhen(parser::WhenExp exp) {
+	// std::cout << "## " << getStringFromEnum(exp.when_token.get_type()) << std::endl;
 	if (exp.when_token.get_type() != token::TokenType::WHEN)
 		throw std::invalid_argument("Syntax error 5");
 
@@ -334,8 +332,6 @@ void Interpreter::interprer()
 
 
 int main(int argc, char** argv) {
-	#include <iostream>
-	
 	if (argc == 2) {
 		Interpreter(argv[1]).interprer();
 		std::cout << "ok";

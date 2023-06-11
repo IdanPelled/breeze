@@ -4,7 +4,6 @@
 #include "Lexer.h"
 
 using std::vector;
-
 namespace parser
 {
 	struct Statement;
@@ -84,7 +83,6 @@ namespace parser
 
 	struct AssignmentExp {
 		token::Token identifier;
-		token::Token assignment;
 
 		Expression value;
 		Type type;
@@ -99,9 +97,11 @@ namespace parser
 	struct WhenExp {
 		token::Token when_token;
 		BoolExp exp;
+		token::Token do_token;
 		BlockExp when_block;
 
 		token::Token otherwise_token;
+		token::Token otherwise_do_token;
 		BlockExp otherwise_block;
 	};
 
