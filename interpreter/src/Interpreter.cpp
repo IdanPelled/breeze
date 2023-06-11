@@ -321,10 +321,15 @@ void Interpreter::interprer()
 
 int main(int argc, char** argv) {
 	if (argc == 2) {
-		Interpreter(argv[1]).interprer();
-		std::cout << "ok";
-		return 0;
+		try {
+			Interpreter(argv[1]).interprer();
+			std::cout << "ok";
+			return 0;
+		}
+		
+		catch (const std::exception& e) {
+			std::cout << e.what() << std::endl;
+		}
 	}
-	std::cout << "error";
 	return 1;
 }

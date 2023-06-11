@@ -4,8 +4,8 @@ using namespace parser;
 
 std::string get_token_name(token::TokenType value) {
 	std::map<std::string, token::TokenType> tokenMap = {
-    {"open", token::TokenType::OPEN},
-    {"close", token::TokenType::CLOSE},
+    {"{", token::TokenType::OPEN},
+    {"}", token::TokenType::CLOSE},
     {"when", token::TokenType::WHEN},
     {"do", token::TokenType::DO},
     {"otherwise", token::TokenType::OTHERWISE},
@@ -17,12 +17,13 @@ std::string get_token_name(token::TokenType value) {
     {"bool", token::TokenType::BOOL},
     {"set", token::TokenType::SET},
     {"to", token::TokenType::TO},
-    {"pluse", token::TokenType::PLUS},
-    {"minus", token::TokenType::MINUS},
-    {"multiply", token::TokenType::MULTIPLY},
-    {"equal", token::TokenType::EQUAL},
-    {"grater", token::TokenType::GREATER},
-    {"smaller", token::TokenType::SMALLER},
+    {"+", token::TokenType::PLUS},
+    {"-", token::TokenType::MINUS},
+    {"*", token::TokenType::MULTIPLY},
+    {"=", token::TokenType::EQUAL},
+    {">", token::TokenType::GREATER},
+    {"<", token::TokenType::SMALLER},
+	{"<end of file>", token::TokenType::END_OF_TOKENS},
 	};
 
     for (const auto& pair : tokenMap) {
@@ -74,7 +75,7 @@ MulExp Parser::parseMulExp() {
 	MulExp ret;
 
 	expect_token(token::TokenType::MULTIPLY);
-	ret.value = next_token();
+	ret.value = expect_token(token::TokenType::NUMBER);
 
 	return ret;
 }
@@ -83,7 +84,7 @@ NumExp Parser::parseNumExp() {
 	NumExp ret;
 	vector<MulExp> muls;
 
-	ret.value = next_token();
+	ret.value = expect_token(token::TokenType::NUMBER);
 
 	while (tokens[index].get_type() == token::TokenType::MULTIPLY)
 		muls.push_back(parseMulExp());
@@ -94,7 +95,6 @@ NumExp Parser::parseNumExp() {
 
 PlusExp Parser::parsePlusExp() {
 	PlusExp ret;
-
 	token::Token tk = expect_token({token::TokenType::PLUS, token::TokenType::MINUS});
 	
 	if (tk.get_type() == token::TokenType::PLUS)
@@ -150,19 +150,10 @@ Expression Parser::parseExpression() {
 		break;
 
 	default:
-		throw std::invalid_argument("Syntax Error 7");
+		throw_unexpected_token(tokens[index].get_type());
 	}
 
 	switch (tokens[index].get_type()) {
-
-	case token::TokenType::PLUS:
-	case token::TokenType::MINUS:
-	case token::TokenType::MULTIPLY:
-		index = i;
-		ret.type = Type::INTEGER;
-		ret.math_exp = parseArithmeticExp();
-		break;
-
 	case token::TokenType::EQUAL:
 	case token::TokenType::GREATER:
 	case token::TokenType::SMALLER:
@@ -211,7 +202,7 @@ Operand Parser::parseOperand() {
 		break;
 
 	default:
-		throw std::invalid_argument("Syntax Error 8");
+		throw_unexpected_token(tokens[index].get_type());
 	}
 
 	return ret;
@@ -239,7 +230,7 @@ AssignmentExp Parser::parseAssignmentExp() {
 	
 
 	expect_token(token::TokenType::SET);
-	ret.identifier = expect_token(token::TokenType::IDENTI);;
+	ret.identifier = expect_token(token::TokenType::IDENTI);
 	expect_token(token::TokenType::TO);
 	ret.value = parseExpression();
 	ret.type = ret.value.type;
@@ -267,8 +258,7 @@ Statement Parser::parseStatement() {
 		break;
 
 	default:
-		throw std::invalid_argument("Syntax Error 9");
-		break;
+		throw_unexpected_token(tokens[index].get_type());
 	}
 
 	return ret;
