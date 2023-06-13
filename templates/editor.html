@@ -41,13 +41,16 @@
     <textarea id="code" class="codemirror-textarea" style="display: none;"></textarea>
   </div>
   
-  <div id="terminal-frame" class="frame" onclick="FocusOnInput()">
+  <div id="terminal-frame" class="frame">
     <div class="frame-header">
       <h2>Terminal</h2>
       <button onclick="ClearOutput()">Clear</button>
     </div>
     <div id="output"></div>
-    <textarea id="input" oninput="AdjustHeight(this)" onkeydown="HandleKeyPress(event, this)" rows="1"></textarea>
+    <div id="input-frame" style="display: none;">
+      <label id="input-msg"></label>
+      <textarea id="input" oninput="AdjustHeight(this)" onkeydown="HandleKeyPress(event, this)" rows="1"></textarea>
+    </div>
   </div>
 {% endblock %}
 

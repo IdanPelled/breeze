@@ -28,11 +28,33 @@ function SendCode() {
         AddOutput(output);
     });
 
+    socket.on('input-request', (message) => {
+        ShowInput(message);
+    });
+
     socket.on('end-program', (output) => {
         AddOutput(output);
         DeleteCookie("execution_token");
         socket.close();
     });
+}
+
+function ShowInput(message) {
+    console.info(message);
+    document.getElementById("input-msg").textContent = message;
+    document.getElementById("input-frame").style.display = "block";
+}
+
+function HideInput(input) {
+    msg = (
+        document.getElementById("input-msg").textContent
+        + ": " + input
+    )
+    
+    document.getElementById("input-msg").textContent = "";
+    document.getElementById("input-frame").style.display = "none";
+
+    AddOutput(msg)
 }
 
 function AddOutput(content) {
@@ -53,21 +75,11 @@ function HandleKeyPress(event, element) {
     // check for entry press
     if (event.keyCode === 13 && !event.shiftKey) {
         if (socket && socket.connected) {
-            console.info("!@#", socket)
             event.preventDefault();
-            console.info(element.value);
-            send("input", element.value);
-            AddOutput(element.value);
+            send("input-response", element.value);
+            HideInput(element.value)
         }
-        else {
-            AddOutput(
-                "You can send input only when the the program is"
-                + "listenign for input. for more information read"
-                + "about the `in` Value function."
-            );
-        }
-
-        element.value = "";
         
+        element.value = "";
     }
 }

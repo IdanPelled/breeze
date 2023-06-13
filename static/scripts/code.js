@@ -2,14 +2,21 @@
 CodeMirror.defineSimpleMode("pseudo", {
     start: [
         // Rules for highlighting pseudo code
-        { regex: /(?:if|else)\b/, token: "keyword" },
+        { regex: /(?:set|to|when|do|otherwise)\b/, token: "keyword" },
         { regex: /"(?:[^\\]|\\.)*?(?:"|$)/, token: "string" },
         { regex: /[0-9]+/, token: "number" },
+        { regex: /(?:no|yes)\b/, token: "atom" },
+        { regex: /(?:out|in)\b/, token: "def" },
     ],
     meta: {
         lineComment: "//",
     },
 });
+
+function AdjustHeight(element) {
+    element.style.height = "auto";
+    element.style.height = element.scrollHeight + "px";
+}
 
 // Initialize CodeMirror with the custom mode
 var codeEditor = CodeMirror.fromTextArea(document.getElementById("code"), {
@@ -59,3 +66,4 @@ function openFile(event) {
 
     reader.readAsText(file);
 }
+

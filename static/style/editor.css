@@ -17,17 +17,13 @@ main {
     width: 30%;
 }
 
-#output #input{
-    padding: 10px;
+#output, #input-frame{
+    margin: 10px;
 }
 
 #input{
-    border: none;
-    outline: none;
     resize: none;
     overflow: visible;
-
-    width: 100%;
 }
 
 #output p {

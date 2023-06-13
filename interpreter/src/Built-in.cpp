@@ -1,7 +1,7 @@
 #include "Built-in.h"
 
 #define PRINT(x) std::cout << x << std::endl
-
+#define INPUT_MESSAGE "~<INPUT MESSAGE>~"
 
 // Action Functions
 void output(const ReturnType& var) {
@@ -33,7 +33,7 @@ ReturnType input(const ReturnType& message) {
         throw std::invalid_argument("`in` expects a text param.");
 
     ReturnType input;
-    std::cout << message.String << std::endl;
+    std::cout << INPUT_MESSAGE << message.String << std::endl;
     std::cin >> input.String;
     return input;
 }

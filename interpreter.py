@@ -5,6 +5,7 @@ from factory import connections, socketio
 
 
 EXE_PATH = './interpreter/bin/breeze'
+INPUT_MESSAGE = "~<INPUT MESSAGE>~"
 
 def pass_input(process: subprocess.Popen, data: str) -> None:
     process.stdin.write((data + '\n').encode())
@@ -45,7 +46,10 @@ def execute_code(code, execution_token):
     generator = run_code(code, execution_token)
     for out in generator:
         if out:
-            socketio.emit("output", out)
+            if (out.startswith(INPUT_MESSAGE)):
+                socketio.emit("input-request", out.lstrip(INPUT_MESSAGE))
+            else:
+                socketio.emit("output", out)
         
         else:
             success = next(generator)
