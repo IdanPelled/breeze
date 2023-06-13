@@ -35,6 +35,6 @@ zip:
 
 # Clean build files
 clean:
-	rm -rf $(OBJ_DIR) $(BIN_DIR) $(RELEASE_DIR)
+	rm -rf $(OBJ_DIR) $(BIN_DIR) $(RELEASE_DIR)/*.zip
 
 .PHONY: all zip clean

@@ -5,37 +5,15 @@
 #include <fstream>
 
 #include "Parser.h"
+#include "Lexer.h"
+#include "Built-in.h"
+
 
 using std::map;
 using std::string;
 
 namespace interpreter
 {
-	typedef enum class VarType {
-		Integer,
-		String,
-		Boolean,
-	} var_t;
-
-	struct Variable {
-		string name;
-
-		int int_val;
-		string identifier_val;
-		bool bool_val;
-		string string_val;
-	
-		var_t type;
-	};
-
-	struct ReturnType {
-		string String;
-		int integer;
-		bool boolean;
-
-		var_t type;
-	};
-
 	class Interpreter {
 	public:
 		Interpreter(const string& code);
@@ -43,7 +21,7 @@ namespace interpreter
 		
 		void set_vat(Variable& var);
 		bool is_var(string& name);
-		Variable get_var(string name);
+		Variable& get_var(string name);
 
 
 		int interprerMulExp(parser::MulExp exp);
@@ -51,13 +29,19 @@ namespace interpreter
 		int interprerNumExp(parser::NumExp exp);
 		int interprerArithmeticExp(parser::ArithmeticExp exp);
 		
-		ReturnType interprerExpression(parser::Operand exp);
+		ReturnType interprerExpression(parser::Expression exp);
+		ReturnType interprerOperand(parser::Operand exp);
 		bool interprerBoolExp(parser::BoolExp exp);
 		bool evaluate_bool(string s);
 
 		void interprerAssignment(parser::AssignmentExp exp);
 		void interprerBlock(parser::BlockExp exp);
 		void interprerWhen(parser::WhenExp exp);
+
+		void interprerActionFunctionCall(parser::FunctionCall exp);
+		ReturnType interprerValueFunctionCall(parser::FunctionCall exp);
+		vector<ReturnType> interprerParams(vector<parser::Expression> params);
+
 		void interprerStatement(parser::Statement exp);
 		void interprerFile(parser::File exp);
 

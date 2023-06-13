@@ -12,6 +12,7 @@ def pass_input(process: subprocess.Popen, data: str) -> None:
 
 
 def read_output(process: subprocess.Popen) -> str:
+    process.stdout.flush()
     return process.stdout.readline().decode()
 
 
@@ -30,6 +31,7 @@ def run_code(code: str, token: str) -> Generator[str, None, bool]:
         out = read_output(process)
 
         if out:
+            print(out)
             yield out
 
         return_statuc_code = process.poll()

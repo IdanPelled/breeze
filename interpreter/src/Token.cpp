@@ -6,14 +6,20 @@
 using std::string;
 using namespace token;
 
-token_t Token::get_type()
+token_t Token::get_type() const
 {
 	return this->type;
 }
 
-string Token::get_data(const string& key)
+string Token::get_data(const string& key) const
 {
-	return data[key];
+	try {
+		return data.at(key);
+	}
+	
+	catch (const std::out_of_range& e) {
+        throw std::invalid_argument("Key error: \"" + key + "\"");
+    }
 }
 
 bool Token::operator == (Token& t) {
@@ -67,3 +73,7 @@ Operator::Operator(token_t type) : Token(type)
 {
 }
 
+Function::Function(const string& name, token_t type) : Token(type)
+{
+	data["name"] = name;
+}

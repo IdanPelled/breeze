@@ -6,6 +6,8 @@ std::string get_token_name(token::TokenType value) {
 	std::map<std::string, token::TokenType> tokenMap = {
     {"{", token::TokenType::OPEN},
     {"}", token::TokenType::CLOSE},
+	{"(", token::TokenType::F_OPEN},
+	{")", token::TokenType::F_CLOSE},
     {"when", token::TokenType::WHEN},
     {"do", token::TokenType::DO},
     {"otherwise", token::TokenType::OTHERWISE},
@@ -75,7 +77,7 @@ MulExp Parser::parseMulExp() {
 	MulExp ret;
 
 	expect_token(token::TokenType::MULTIPLY);
-	ret.value = expect_token(token::TokenType::NUMBER);
+	ret.value = expect_token({token::TokenType::NUMBER, token::TokenType::IDENTI});
 
 	return ret;
 }
@@ -84,7 +86,7 @@ NumExp Parser::parseNumExp() {
 	NumExp ret;
 	vector<MulExp> muls;
 
-	ret.value = expect_token(token::TokenType::NUMBER);
+	ret.value = expect_token({token::TokenType::NUMBER, token::TokenType::IDENTI});		
 
 	while (tokens[index].get_type() == token::TokenType::MULTIPLY)
 		muls.push_back(parseMulExp());
@@ -123,7 +125,7 @@ ArithmeticExp Parser::parseArithmeticExp() {
 	return ret;
 }
 
-Expression Parser::parseExpression() {
+Expression Parser::parseExpression(bool is_operand = false) {
 	Expression ret;
 	int i = index;
 
@@ -149,23 +151,37 @@ Expression Parser::parseExpression() {
 		ret.type = Type::BOOLEAN;
 		break;
 
+	case token::TokenType::VALUE_FUNCTION:
+		ret.function = parseFunctionCall();
+		ret.type = Type::FUNCTION;
+		break;
+
 	default:
 		throw_unexpected_token(tokens[index].get_type());
 	}
 
 	switch (tokens[index].get_type()) {
+	case token::TokenType::PLUS:
+	case token::TokenType::MINUS:
+	case token::TokenType::MULTIPLY:
+		index = i;
+		ret.type = Type::INTEGER;
+		ret.math_exp = parseArithmeticExp();
+		break;
+
 	case token::TokenType::EQUAL:
 	case token::TokenType::GREATER:
 	case token::TokenType::SMALLER:
-		index = i;
-		ret.type = Type::BOOLEAN;
-		ret.boolean = parseBoolExp();
+		if (!is_operand) {
+			index = i;
+			ret.type = Type::BOOLEAN;
+			ret.boolean = parseBoolExp();
+		}
 		break;
 
 	default:
 		break;
 	}
-
 	return ret;
 }
 
@@ -175,52 +191,47 @@ bool is_bool_operator(token::Token op) {
 		|| op.get_type() == token::TokenType::GREATER
 		|| op.get_type() == token::TokenType::SMALLER
 	);
-}		
+}  
 
 Operand Parser::parseOperand() {
 	Operand ret;
-	switch (tokens[index].get_type())
+	int i = index;
+	token::Token tk = next_token();
+	if (
+		tk.get_type() == token::TokenType::BOOL
+		&& !is_bool_operator(tokens[index])
+	)
 	{
-	case token::TokenType::IDENTI:
-		ret.identifier = next_token();
-		ret.type = Type::IDENTIFIER;
-		break;
-
-	case token::TokenType::NUMBER:
-		ret.math_exp = parseArithmeticExp();
-		ret.type = Type::INTEGER;
-		break;
-
-	case token::TokenType::TEXT:
-		ret.string = next_token();
-		ret.type = Type::STRING;
-		break;
-
-	case token::TokenType::BOOL:
-		ret.boolean = next_token();
-		ret.type = Type::BOOLEAN;
-		break;
-
-	default:
-		throw_unexpected_token(tokens[index].get_type());
-	}
-
-	return ret;
-}
-
-BoolExp Parser::parseBoolExp() {
-	BoolExp ret;
-
-	ret.left = parseOperand();
-	
-	if (!is_bool_operator(tokens[index])) {
-		ret.type = BoolType::EXPRESSION;
+		ret.type = OperandType::Literal;
+		ret.literal_value = tk;
 		return ret;
 	}
 
-	ret.op = next_token();
-	ret.right = parseOperand();
-	ret.type = BoolType::QUERY;
+	ret.type = OperandType::Expression;
+	index = i;
+	ret.exp_value = new Expression(parseExpression(true));
+	return ret;	
+
+}
+
+
+
+BoolExp Parser::parseBoolExp() {
+	BoolExp ret;
+	Operand tmp;
+	ret.left = parseOperand();
+
+	while (is_bool_operator(tokens[index])) {
+		token::Token op = expect_token({
+			token::TokenType::EQUAL, 
+			token::TokenType::GREATER, 
+			token::TokenType::SMALLER
+		});
+		tmp.op = op;
+		tmp.exp_value = new Expression(parseExpression(true));
+		tmp.type = OperandType::Expression;
+		ret.operands.push_back(tmp);
+	}
 
 	return ret;
 }
@@ -228,7 +239,6 @@ BoolExp Parser::parseBoolExp() {
 AssignmentExp Parser::parseAssignmentExp() {
 	AssignmentExp ret;
 	
-
 	expect_token(token::TokenType::SET);
 	ret.identifier = expect_token(token::TokenType::IDENTI);
 	expect_token(token::TokenType::TO);
@@ -256,6 +266,14 @@ Statement Parser::parseStatement() {
 		ret.type = StatementType::BLOCK_TYPE;
 		ret.block_statement = parseBlockExp();
 		break;
+	
+	case token::TokenType::ACTION_FUNCTION:
+		ret.type = StatementType::CALL_TYPE;
+		ret.function_statement = parseFunctionCall();
+		break;
+	
+	case token::TokenType::VALUE_FUNCTION:
+		throw std::invalid_argument("Value function must save the return value");
 
 	default:
 		throw_unexpected_token(tokens[index].get_type());
@@ -298,6 +316,53 @@ WhenExp Parser::parseWhenExp() {
 		ret.otherwise = false;
 
 	return ret;
+}
+
+vector<Expression> Parser::parseParams() {
+	vector<Expression> ret;
+	expect_token(token::TokenType::F_OPEN);
+
+	if (tokens[index].get_type() != token::TokenType::F_CLOSE)
+		ret.push_back(parseExpression());
+	
+	while (tokens[index].get_type() != token::TokenType::F_CLOSE) {
+		expect_token(token::TokenType::COMMA);
+		ret.push_back(parseExpression());
+	}
+
+	expect_token(token::TokenType::F_CLOSE);
+	return ret;
+}
+
+FunctionCall Parser::parseFunctionCall() {
+	FunctionCall ret;
+
+	token::Token function = expect_token(
+		{
+			token::TokenType::VALUE_FUNCTION,
+			token::TokenType::ACTION_FUNCTION
+		}
+	);
+	
+	switch(function.get_type()) {
+	case token::TokenType::VALUE_FUNCTION:
+		ret.type = FuncType::Value;
+		break;
+
+	case token::TokenType::ACTION_FUNCTION:
+		ret.type = FuncType::Action;
+		break;
+	
+	default:
+		throw std::invalid_argument("Syntax error 1");
+	}
+
+
+	
+	ret.params = parseParams();
+	ret.name = function.get_data("name");
+	return ret;
+
 }
 
 File Parser::parseFile() {

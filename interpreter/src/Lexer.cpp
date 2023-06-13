@@ -10,6 +10,9 @@ using namespace lexer;
 map<string, token::token_t> keywords_map = {
 	{"{", token::TokenType::OPEN},
 	{"}", token::TokenType::CLOSE},
+	{"(", token::TokenType::F_OPEN},
+	{")", token::TokenType::F_CLOSE},
+	{",", token::TokenType::COMMA},
 	{"when", token::TokenType::WHEN},
 	{"do", token::TokenType::DO},
 	{"otherwise", token::TokenType::OTHERWISE},
@@ -27,11 +30,31 @@ map<string, token::token_t> operators_map = {
 
 };
 
+map<token::TokenType, map<string, map<string, token::TokenType>>> functions = {
+	{
+		token::TokenType::ACTION_FUNCTION,
+		{
+			{"out", {
+				{"param", token::TokenType::IDENTI}
+			}}
+		}
+	},
+	{
+		token::TokenType::VALUE_FUNCTION,
+		{
+			{"in", {
+				{"param", token::TokenType::TEXT},
+				{"return", token::TokenType::TEXT}
+			}}
+		}
+	}
+};
+
 Lexer::Lexer(const string& row) : row{ std::istringstream(row) }
 {
 }
 
-const string& Lexer::next_word() {
+const string Lexer::next_word() {
 	string word;
 	row >> word;
 	return word;
@@ -47,6 +70,30 @@ bool Lexer::is_operator(const string& word) {
 
 bool Lexer::is_keyword(const string& word) {
 	return is_in_map(word, keywords_map);
+}
+
+bool Lexer::is_function(const string& word) {
+	for (auto type: functions) {
+		
+		for (auto pair: type.second) {			
+			if (pair.first == word)
+				return true;
+		}
+	}
+
+	return false;
+}
+
+token::token_t Lexer::get_function_type(const string& func) {
+	for (auto type: functions) {
+		
+		for (auto pair: type.second) {			
+			if (pair.first == func)
+				return type.first;
+		}
+	}
+
+	return token::token_t();
 }
 
 bool Lexer::is_identifier(const string& word) {
@@ -71,6 +118,9 @@ token::Token Lexer::tokenize(const string& word) {
 
 	if (is_literal(word))
 		return token::Literal(word);
+
+	if (is_function(word))
+		return token::Function(word, get_function_type(word));
 
 	if (is_identifier(word))
 		return token::Identifier(word);

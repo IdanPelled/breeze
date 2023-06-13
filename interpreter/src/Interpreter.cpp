@@ -16,8 +16,15 @@ Interpreter::Interpreter(const string& data)
 {
 }
 
-Variable Interpreter::get_var(string name) {
-	return vars[name];
+Variable& Interpreter::get_var(string name) {
+	try {
+		return vars.at(name);
+	}
+	
+	catch (const std::out_of_range& e) {
+        throw std::invalid_argument("Key error: \"" + name + "\"");
+    }
+	
 }
 
 int Interpreter::interprerMulExp(parser::MulExp exp) {
@@ -71,7 +78,7 @@ int Interpreter::interprerArithmeticExp(parser::ArithmeticExp exp)
 	return ret;
 }
 
-ReturnType Interpreter::interprerExpression(parser::Operand exp) {
+ReturnType Interpreter::interprerExpression(parser::Expression exp) {
 	ReturnType ret;
 	Variable var;
 
@@ -98,8 +105,12 @@ ReturnType Interpreter::interprerExpression(parser::Operand exp) {
 		break;
 	
 	case parser::Type::BOOLEAN:
-		ret.boolean = evaluate_bool(exp.boolean.get_data("value"));
 		ret.type = VarType::Boolean;
+
+		if(exp.boolean.operands.size() == 0)
+			ret.boolean = interprerOperand(exp.boolean.left).boolean;
+
+		ret.boolean = interprerBoolExp(exp.boolean);
 		break;
 
 	case parser::Type::STRING:
@@ -110,6 +121,11 @@ ReturnType Interpreter::interprerExpression(parser::Operand exp) {
 	case parser::Type::INTEGER:
 		ret.integer = interprerArithmeticExp(exp.math_exp);
 		ret.type = VarType::Integer;
+		break;
+	
+	case parser::Type::FUNCTION:
+		std::cout << "TODO\n";
+		ret = interprerValueFunctionCall(exp.function);
 		break;
 	}
 
@@ -129,12 +145,12 @@ bool Interpreter::evaluate_bool(string s) {
 
 bool evaluate_equal(ReturnType left, ReturnType right) {
 	if (left.type != right.type)
-		throw std::invalid_argument("Cant compare diffrent types");
+		throw std::invalid_argument("Value error: Cant compare diffrent types");
 
 	switch (left.type)
 	{
 	case VarType::Boolean:
-		return left.boolean && right.boolean;
+		return left.boolean == right.boolean;
 
 	case VarType::String:
 		return left.String.compare(right.String) == 0;
@@ -149,7 +165,7 @@ bool evaluate_equal(ReturnType left, ReturnType right) {
 
 bool evaluate_grater(ReturnType left, ReturnType right) {
 	if (left.type != right.type)
-		throw std::invalid_argument("Cant compare diffrent types");
+		throw std::invalid_argument("Value error: Cant compare diffrent types");
 
 	switch (left.type)
 	{
@@ -169,7 +185,7 @@ bool evaluate_grater(ReturnType left, ReturnType right) {
 
 bool evaluate_smaller(ReturnType left, ReturnType right) {
 	if (left.type != right.type)
-		throw std::invalid_argument("Cant compare diffrent types");
+		throw std::invalid_argument("Value error: Cant compare diffrent types");
 
 	switch (left.type)
 	{
@@ -187,34 +203,69 @@ bool evaluate_smaller(ReturnType left, ReturnType right) {
 	}
 }
 
+ReturnType Interpreter::interprerOperand(parser::Operand exp) {
+	ReturnType ret;
+	
+	switch (exp.type)
+	{
+	case parser::OperandType::Expression:
+		return interprerExpression(*exp.exp_value);
+	
+	case parser::OperandType::Literal:
+		ret.type = VarType::Boolean;
+		ret.boolean = evaluate_bool(exp.literal_value.get_data("value"));
+		break;
+	}
+
+	return ret;
+}
+
+
 bool Interpreter::interprerBoolExp(parser::BoolExp exp) {
-	if (exp.type == parser::BoolType::EXPRESSION)
-		if (exp.left.type == parser::Type::BOOLEAN)
-			return interprerExpression(exp.left).boolean;
-		else
-			if (exp.left.type == parser::Type::IDENTIFIER
-				&& get_var(exp.left.identifier.get_data("name")).type == VarType::Boolean)
-				return get_var(exp.left.identifier.get_data("name")).bool_val;
-			else
-				throw std::invalid_argument("Not a boolean expression");
+	ReturnType left = interprerOperand(exp.left);
+	ReturnType right, tmp;
+	bool ret = false;
 
-	else if (exp.type == parser::BoolType::QUERY) {
-		ReturnType left = interprerExpression(exp.left);
-		ReturnType right = interprerExpression(exp.right);
-
-		switch (exp.op.get_type())
+	for(auto operand : exp.operands) {
+		right = interprerOperand(operand);
+		
+		switch (operand.op.get_type())
 		{
 		case token::TokenType::EQUAL:
-			return evaluate_equal(left, right);
-		case token::TokenType::GREATER:
-			return evaluate_grater(left, right);
-		case token::TokenType::SMALLER:
-			return evaluate_smaller(left, right);
-		default:
+			ret = evaluate_equal(left, right);
 			break;
+
+		case token::TokenType::GREATER:
+			ret = evaluate_grater(left, right);
+			break;
+
+		case token::TokenType::SMALLER:
+			ret = evaluate_smaller(left, right);
+			break;
+
+		default:
+			throw std::invalid_argument("Syntax error");
+		}
+
+		tmp.type = VarType::Boolean;
+		tmp.boolean = ret;
+		left = tmp;
+
+	}
+	ret = left.boolean;
+	return ret;
+}
+
+map<string, token::TokenType> get_function(const string& name) {
+	for (auto type: functions) {
+		
+		for (auto pair: type.second) {			
+			if (pair.first == name)
+				return pair.second;
 		}
 	}
-	throw std::invalid_argument("Not a boolean expression");
+
+	throw std::invalid_argument("Function does not exist");
 }
 
 void Interpreter::interprerAssignment(parser::AssignmentExp exp) {
@@ -242,24 +293,51 @@ void Interpreter::interprerAssignment(parser::AssignmentExp exp) {
 		switch (get_var(exp.value.identifier.get_data("name")).type)
 		{
 		case VarType::Integer:
+			std::cout << exp.value.identifier.get_data("name");
 			var.int_val = interprerArithmeticExp(exp.value.math_exp);
 			var.type = VarType::Integer;
 			break;
+
 		case VarType::String:
 			var.string_val = exp.value.string.get_data("value");
 			var.type = VarType::String;
 			break;
+
 		case VarType::Boolean:
 			var.bool_val = interprerBoolExp(exp.value.boolean);
 			var.type = VarType::Boolean;
 			break;
+
+		default:
+			break;
+		}
+		break;
+
+	case parser::Type::FUNCTION:
+		switch (get_function(exp.value.function.name)["return"])
+		{
+		case token::TokenType::BOOL:
+			var.int_val = interprerValueFunctionCall(exp.value.function).boolean;
+			var.type = VarType::Boolean;
+			break;
+		
+		case token::TokenType::TEXT:
+			var.string_val = interprerValueFunctionCall(exp.value.function).String;
+			var.type = VarType::String;
+			break;
+
+		case token::TokenType::NUMBER:
+			var.int_val = interprerValueFunctionCall(exp.value.function).integer;
+			var.type = VarType::Integer;
+			break;
+		
 		default:
 			break;
 		}
 		break;
 
 	default:
-		throw std::invalid_argument("Syntax error");
+		throw std::invalid_argument("Syntax error 5");
 	}
 
 	set_vat(var);
@@ -292,10 +370,80 @@ void Interpreter::interprerStatement(parser::Statement exp) {
 	case parser::StatementType::BLOCK_TYPE:
 		interprerBlock(exp.block_statement);
 		break;
+	
+	case parser::StatementType::CALL_TYPE:
+		interprerActionFunctionCall(exp.function_statement);
+		break;
 
 	default:
-		throw std::invalid_argument("Syntax error");
+		throw std::invalid_argument("Syntax error 4");
 	}
+}
+
+void check_params(
+	const string& name,
+	const size_t length,
+	const vector<parser::Expression>& params
+) {
+	if (params.size() != length)
+		throw std::invalid_argument(
+			"Value error: `" + name + "` is expecting " + std::to_string(length) + " parameters, "
+			+ "got " + std::to_string(params.size()) + "."
+		);
+
+}
+
+vector<ReturnType> Interpreter::interprerParams(vector<parser::Expression> params) {
+	vector<ReturnType> ret;
+	ReturnType tmp;
+	
+	for (auto param : params) {
+		tmp = interprerExpression(param);
+		ret.push_back(tmp);
+	}
+	return ret;
+}
+
+void Interpreter::interprerActionFunctionCall(parser::FunctionCall exp) {
+	if (exp.type != parser::FuncType::Action)
+		throw std::invalid_argument("Expecting an Action Function");
+	
+	vector<ReturnType> parameters = interprerParams(exp.params);
+
+	if(exp.name == "out") {
+		check_params(exp.name, 1, exp.params);
+		output(parameters[0]);
+		return;
+	}
+
+	// else if ( ) { }
+	
+	throw std::invalid_argument(
+		"Value error: \"" + exp.name + "\" is not a built in function"
+	);
+}
+
+
+ReturnType Interpreter::interprerValueFunctionCall(
+	parser::FunctionCall exp
+) {
+	if (exp.type != parser::FuncType::Value)
+		throw std::invalid_argument("Expecting a Value Function");
+	
+	vector<ReturnType> params = interprerParams(exp.params);
+
+	if(exp.name == "in") {
+		check_params(exp.name, 1, exp.params);
+		return input(params[0]);
+
+	}
+
+	// else if ( ) { }
+
+	throw std::invalid_argument(
+		"Value error: \"" + exp.name + "\" is not a built in function"
+	);
+
 }
 
 void Interpreter::interprerFile(parser::File exp) {
@@ -323,7 +471,6 @@ int main(int argc, char** argv) {
 	if (argc == 2) {
 		try {
 			Interpreter(argv[1]).interprer();
-			std::cout << "ok";
 			return 0;
 		}
 		

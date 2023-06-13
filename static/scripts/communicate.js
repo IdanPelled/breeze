@@ -51,16 +51,23 @@ function DeleteCookie(cookieName) {
 
 function HandleKeyPress(event, element) {
     // check for entry press
-    if (
-        event.keyCode === 13
-        && !event.shiftKey
-        && socket &&
-        socket.connected
-    ) {
-        console.info("!@#", socket)
-        event.preventDefault();
-        send("input", element.value);
-        AddOutput(element.value);
+    if (event.keyCode === 13 && !event.shiftKey) {
+        if (socket && socket.connected) {
+            console.info("!@#", socket)
+            event.preventDefault();
+            console.info(element.value);
+            send("input", element.value);
+            AddOutput(element.value);
+        }
+        else {
+            AddOutput(
+                "You can send input only when the the program is"
+                + "listenign for input. for more information read"
+                + "about the `in` Value function."
+            );
+        }
+
         element.value = "";
+        
     }
 }

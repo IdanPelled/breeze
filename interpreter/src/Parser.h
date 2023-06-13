@@ -1,16 +1,17 @@
 #pragma once
 #include <vector>
 #include <numeric>
+
 #include "Token.h"
 #include "Lexer.h"
 
 using std::vector;
+
+std::string get_token_name(token::TokenType value);
+
 namespace parser
 {
 	struct Statement;
-	struct WhenExp;
-	struct BlockExp;
-	struct BoolExp;
 	struct Expression;
 
 	enum class Type {
@@ -18,17 +19,24 @@ namespace parser
 		INTEGER,
 		STRING,
 		BOOLEAN,
+		FUNCTION
 	};
 
-	enum class BoolType {
-		QUERY, // when i == j
-		EXPRESSION, // when i
+	enum class FuncType {
+		Action,
+		Value,
+	};
+
+	enum class OperandType {
+		Expression,
+		Literal,
 	};
 
 	enum class StatementType {
 		ASSIGNMENT_TYPE,
 		WHEN_TYPE,
 		BLOCK_TYPE,
+		CALL_TYPE
 	};
 
 
@@ -53,29 +61,30 @@ namespace parser
 		vector<PlusExp> pluses;
 	};
 
-	struct Operand {
-		ArithmeticExp math_exp;
-		
-		token::Token boolean;
-		token::Token identifier;
-		token::Token string;
+	struct FunctionCall {
+		string name;
+		FuncType type;
+		vector<Expression> params;
+	};
 
-		Type type;
+	struct Operand {
+		token::Token literal_value;
+		
+		token::Token op;
+		Expression* exp_value;
+
+		OperandType type;
 	};
 
 	struct BoolExp {
 		Operand left;
-
-		// optional
-		token::Token op;
-		Operand right;
-
-		BoolType type;
+		vector<Operand> operands;
 	};
 
 	struct Expression {
 		ArithmeticExp math_exp;
 		BoolExp boolean;
+		FunctionCall function;
 
 		token::Token identifier;
 		token::Token string;
@@ -88,6 +97,7 @@ namespace parser
 
 		Expression value;
 		Type type;
+
 	};
 
 	struct BlockExp {
@@ -107,6 +117,7 @@ namespace parser
 		WhenExp when_statement;
 		AssignmentExp assignment_statement;
 		BlockExp block_statement;
+		FunctionCall function_statement;
 
 		StatementType type;
 	};
@@ -125,14 +136,15 @@ namespace parser
 		NumExp parseNumExp();
 		PlusExp parsePlusExp();
 		ArithmeticExp parseArithmeticExp();
-		Expression parseExpression();
+		Expression parseExpression(bool is_operand);
 		Operand parseOperand();
 		BoolExp parseBoolExp();
-		BoolExp parseBoolExp(Operand left);
 		AssignmentExp parseAssignmentExp();
 		Statement parseStatement();
 		BlockExp parseBlockExp();
 		WhenExp parseWhenExp();
+		vector<Expression> parseParams();
+		FunctionCall parseFunctionCall();
 
 		inline token::Token next_token();
 		token::Token expect_token(vector<token::TokenType> types);
