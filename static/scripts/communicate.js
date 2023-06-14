@@ -8,20 +8,15 @@ const send = (eventName, data) => {
     
     socket.emit(eventName, dataWithToken);
 };
-  
+
 
 function SendCode() {
+    StartProgram();
+    Connect();
+}
 
-    var code = codeEditor.getValue();
-    var url = window.location.origin + "/execute";
-
-    fetch(url, {
-        method: 'POST',
-        body: JSON.stringify({code: code}),
-        headers: {
-            'Content-Type': 'application/json'
-        },
-    });
+function Connect()
+{
     socket = io();
     
     socket.on('output', (output) => {
@@ -33,31 +28,74 @@ function SendCode() {
     });
 
     socket.on('end-program', (output) => {
-        AddOutput(output);
-        DeleteCookie("execution_token");
-        socket.close();
+        EndProgram(output);
     });
 }
 
-function ShowInput(message) {
-    console.info(message);
-    document.getElementById("input-msg").textContent = message;
-    document.getElementById("input-frame").style.display = "block";
+function StartProgram()
+{
+    var code = codeEditor.getValue();
+    var url = window.location.origin + "/execute";
+
+    fetch(url, {
+        method: 'POST',
+        body: JSON.stringify({code: code}),
+        headers: {
+            'Content-Type': 'application/json'
+        },
+    });
+
+    ToggleButton("run", true);
+    ToggleButton("stop", false);
+    ToggleVisability("loading", "inline-block");
 }
 
-function HideInput(input) {
+function ToggleButton(name, state)
+{
+    document.getElementById(name).disabled = state;
+}
+
+function ToggleVisability(name, mode)
+{
+    document.getElementById(name).style.display = mode;
+}
+
+function EndProgram(output)
+{
+    AddOutput(output);
+    Stop();
+}
+
+function Stop() {
+    DeleteCookie("execution_token");
+    ToggleButton("run", false);
+    ToggleButton("stop", true);
+    ToggleVisability("loading", "none");
+    socket.close();
+}
+
+function ShowInput(message)
+{
+    console.info(message);
+    document.getElementById("input-msg").textContent = message;
+    ToggleVisability("input-frame", "block");
+}
+
+function HideInput(input)
+{
     msg = (
         document.getElementById("input-msg").textContent
         + ": " + input
     )
     
     document.getElementById("input-msg").textContent = "";
-    document.getElementById("input-frame").style.display = "none";
+    ToggleVisability("input-frame", "none");
 
     AddOutput(msg)
 }
 
-function AddOutput(content) {
+function AddOutput(content)
+{
     var paragraph = document.createElement("p");
     const out = document.getElementById("output")
     
@@ -66,12 +104,13 @@ function AddOutput(content) {
     out.scrollTop = out.scrollHeight;
 }
 
-
-function DeleteCookie(cookieName) {
+function DeleteCookie(cookieName)
+{
     document.cookie = cookieName + "=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
 }
 
-function HandleKeyPress(event, element) {
+function HandleKeyPress(event, element)
+{
     // check for entry press
     if (event.keyCode === 13 && !event.shiftKey) {
         if (socket && socket.connected) {

@@ -12,6 +12,16 @@ main {
     width: 70%;
 }
 
+#run:disabled {
+    opacity: 0.5;
+    cursor:unset;
+}
+
+#stop:disabled {
+    opacity: 0.5;
+    cursor:unset;
+}
+
 #terminal-frame {
     margin: 0px 20px 20px 10px;
     width: 30%;
@@ -50,6 +60,8 @@ main {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
+    align-items: center;
+
 
     border: 1px solid var(--border);
     background-color: var(--light-blue);
@@ -64,19 +76,14 @@ main {
     font-weight: normal;
 }
 
-.frame-header button {
+.frame-header div button {
     margin: 5px;
-
-    background-color: var(--white);
     color: var(--teal-blue);
-    border: 1px solid var(--border);
-    border-radius: 5px;
-}
-
-.frame-header button:hover, .frame-header button:active {
-    border-color: var(--teal-blur);
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
 }
 
 .frame-header button:active {
-    border-style: inset;
+    color: var(--white);
 }

@@ -65,8 +65,19 @@ header ul li label, header ul li a{
     
 }
 
-header ul li label:hover, header ul li a:hover{
-    background-color: var(--light-blue);
+header ul li label, header ul li a{
+    margin: 5px;
+    color: var(--teal-blue);
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+}
+
+header ul li label:active,
+header ul li a:active,
+header ul li label:hover,
+header ul li a:hover {
+    color: var(--light-blue);
 }
 
 header img {

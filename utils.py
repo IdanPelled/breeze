@@ -10,6 +10,7 @@ def remove_token_prefix(token):
     else:
         return ""
 
+
 def predicate(func):
     
     def decorator(data):

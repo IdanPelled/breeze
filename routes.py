@@ -26,15 +26,23 @@ def index():
 @routes_app.route('/execute', methods=['POST'])
 def execute():
     code = request.json.get("code")
-
-    execution_token = hex(secrets.randbelow(2 ** 1000))
-    execution_thread = threading.Thread(
-        target=execute_code, args=(code, execution_token)
-    )
-    execution_thread.start()
-    
     response = make_response()
-    response.set_cookie('execution_token', execution_token)
+
+    if request.cookies.get('execution_token') is None:
+
+        execution_token = hex(secrets.randbelow(2 ** 1000))
+        execution_thread = threading.Thread(
+            target=execute_code,
+            args=(code, execution_token)
+        )
+        execution_thread.start()
+
+        response.set_cookie('execution_token', execution_token)
+    
+    else:
+        # Too Many Requests Status Code
+        response.status_code = 429
+    
     return response
 
 

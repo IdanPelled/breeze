@@ -124,7 +124,6 @@ ReturnType Interpreter::interprerExpression(parser::Expression exp) {
 		break;
 	
 	case parser::Type::FUNCTION:
-		std::cout << "TODO\n";
 		ret = interprerValueFunctionCall(exp.function);
 		break;
 	}
