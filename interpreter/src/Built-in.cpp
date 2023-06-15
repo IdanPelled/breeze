@@ -21,7 +21,13 @@ void output(const ReturnType& var) {
             else
                 PRINT("no");
             break;
+        
+        default:
+            throw std::invalid_argument("Syntax error");
+
     }
+    std::cout << std::flush;
+
 }
 
 // ------------------------------------------------- //
@@ -33,6 +39,8 @@ ReturnType input(const ReturnType& message) {
         throw std::invalid_argument("`in` expects a text param.");
 
     ReturnType input;
+    input.type = VarType::String;
+
     std::cout << INPUT_MESSAGE << message.String << std::endl;
     std::cin >> input.String;
     return input;

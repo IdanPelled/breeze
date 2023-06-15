@@ -1,4 +1,5 @@
 import subprocess
+import time
 from typing import Generator
 
 from factory import connections, socketio
@@ -7,14 +8,10 @@ from factory import connections, socketio
 EXE_PATH = './interpreter/bin/breeze'
 INPUT_MESSAGE = "~<INPUT MESSAGE>~"
 
+
 def pass_input(process: subprocess.Popen, data: str) -> None:
-    process.stdin.write((data + '\n').encode())
+    process.stdin.write(data + '\n')
     process.stdin.flush()
-
-
-def read_output(process: subprocess.Popen) -> str:
-    process.stdout.flush()
-    return process.stdout.readline().decode()
 
 
 def run_code(code: str, token: str) -> Generator[str, None, bool]:
@@ -23,19 +20,21 @@ def run_code(code: str, token: str) -> Generator[str, None, bool]:
         stdin=subprocess.PIPE,
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE,
+        universal_newlines=True,
     )
 
     connections.update({token: process})
     return_statuc_code = process.poll()
-    
-    while return_statuc_code is None:
-        out = read_output(process)
+    flag = True
 
-        if out:
-            print(out)
-            yield out
+    while flag:
+        output = process.stdout.readline()
+        
+        if output:
+            yield output
 
         return_statuc_code = process.poll()
+        flag = output != '' or process.poll() is None
     
     yield None
     del connections[token]
@@ -43,11 +42,14 @@ def run_code(code: str, token: str) -> Generator[str, None, bool]:
 
 
 def execute_code(code, execution_token):
+    time.sleep(0.1)
     generator = run_code(code, execution_token)
     for out in generator:
         if out:
+            
             if (out.startswith(INPUT_MESSAGE)):
                 socketio.emit("input-request", out.lstrip(INPUT_MESSAGE))
+            
             else:
                 socketio.emit("output", out)
         
@@ -55,5 +57,6 @@ def execute_code(code, execution_token):
             success = next(generator)
             if success:
                 socketio.emit("end-program", "Program completed :)")
+            
             else:
                 socketio.emit("end-program", "Error occurred :(")

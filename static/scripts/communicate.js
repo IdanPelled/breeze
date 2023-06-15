@@ -12,24 +12,26 @@ const send = (eventName, data) => {
 
 function SendCode() {
     StartProgram();
-    Connect();
-}
-
-function Connect()
-{
     socket = io();
     
     socket.on('output', (output) => {
+        console.info(output);
         AddOutput(output);
     });
 
     socket.on('input-request', (message) => {
+        console.error(message);
         ShowInput(message);
     });
 
     socket.on('end-program', (output) => {
         EndProgram(output);
     });
+}
+
+function Connect()
+{
+    
 }
 
 function StartProgram()
@@ -71,6 +73,8 @@ function Stop() {
     ToggleButton("run", false);
     ToggleButton("stop", true);
     ToggleVisability("loading", "none");
+
+    // socket.emit("stop", document.cookie);
     socket.close();
 }
 

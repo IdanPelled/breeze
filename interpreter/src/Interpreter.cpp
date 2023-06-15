@@ -400,6 +400,7 @@ vector<ReturnType> Interpreter::interprerParams(vector<parser::Expression> param
 		tmp = interprerExpression(param);
 		ret.push_back(tmp);
 	}
+
 	return ret;
 }
 
@@ -408,13 +409,11 @@ void Interpreter::interprerActionFunctionCall(parser::FunctionCall exp) {
 		throw std::invalid_argument("Expecting an Action Function");
 	
 	vector<ReturnType> parameters = interprerParams(exp.params);
-
 	if(exp.name == "out") {
 		check_params(exp.name, 1, exp.params);
 		output(parameters[0]);
 		return;
 	}
-
 	// else if ( ) { }
 	
 	throw std::invalid_argument(
