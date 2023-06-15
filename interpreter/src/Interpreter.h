@@ -23,7 +23,7 @@ namespace interpreter
 		bool is_var(string& name);
 		Variable& get_var(string name);
 
-
+		int interprerNumberExp(parser::NumberExp exp);
 		int interprerMulExp(parser::MulExp exp);
 		int interprerPlusExp(parser::PlusExp exp);
 		int interprerNumExp(parser::NumExp exp);

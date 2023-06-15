@@ -32,3 +32,5 @@ void output(const ReturnType& var);
 
 // Value Functions
 ReturnType input(const ReturnType& message);
+ReturnType to_number(const ReturnType& text_number);
+ReturnType to_text(const ReturnType& number);

@@ -2,11 +2,11 @@
 CodeMirror.defineSimpleMode("pseudo", {
     start: [
         // Rules for highlighting pseudo code
-        { regex: /(?:set|to|when|do|otherwise)\b/, token: "keyword" },
         { regex: /"(?:[^\\]|\\.)*?(?:"|$)/, token: "string" },
         { regex: /[0-9]+/, token: "number" },
         { regex: /(?:no|yes)\b/, token: "atom" },
-        { regex: /(?:out|in)\b/, token: "def" },
+        { regex: /(?:out|in|to-number|to-text)\b/, token: "def" },
+        { regex: /(?:set|to|when|do|otherwise)\b/, token: "keyword" },
     ],
     meta: {
         lineComment: "//",

@@ -27,8 +27,46 @@ Variable& Interpreter::get_var(string name) {
 	
 }
 
+int Interpreter::interprerNumberExp(parser::NumberExp exp) {
+	ReturnType ret;
+	Variable var;
+
+	switch (exp.type)
+	{
+	case parser::NumberType::Func:
+		ret = interprerValueFunctionCall(*(exp.func_value));
+		if (ret.type != VarType::Integer)
+			throw std::invalid_argument(
+				"Runtime error: Arithmetic operation must be on numbers, but Value function returned a non integer value"
+			);
+
+		return ret.integer;
+	
+	case parser::NumberType::Token:
+		switch (exp.token_value.get_type())
+		{
+		case token::TokenType::IDENTI:
+			var = get_var(exp.token_value.get_data("name"));
+			
+			if (var.type != VarType::Integer)
+				throw std::invalid_argument("Arithmetic expression can use only variable of type number");
+			
+			return var.int_val;
+
+		case token::TokenType::NUMBER:
+			return stoi(exp.token_value.get_data("value"));
+		
+		default:
+			throw std::invalid_argument("Syntax Error: invalid token");
+		}
+
+	default:
+		throw std::invalid_argument("Syntax Error: invalid token");
+	}
+}
+
 int Interpreter::interprerMulExp(parser::MulExp exp) {
-	return stoi(exp.value.get_data("value"));
+	return interprerNumberExp(exp.number);
 }
 
 int Interpreter::interprerPlusExp(parser::PlusExp exp) {
@@ -37,22 +75,8 @@ int Interpreter::interprerPlusExp(parser::PlusExp exp) {
 }
 
 
-
 int Interpreter::interprerNumExp(parser::NumExp exp) {
-	int ret;
-
-	if (exp.value.get_type() == token::TokenType::IDENTI) {
-		Variable var = get_var(exp.value.get_data("name"));
-		
-		if (var.type != VarType::Integer)
-			throw std::invalid_argument("Variable must be a number");
-		
-		ret = var.int_val;
-	}
-
-	else
-		ret = stoi(exp.value.get_data("value"));
-	
+	int ret = interprerNumberExp(exp.number);
 
 	for (parser::MulExp mul : exp.multiplys)
 		ret *= interprerMulExp(mul);
@@ -292,7 +316,6 @@ void Interpreter::interprerAssignment(parser::AssignmentExp exp) {
 		switch (get_var(exp.value.identifier.get_data("name")).type)
 		{
 		case VarType::Integer:
-			std::cout << exp.value.identifier.get_data("name");
 			var.int_val = interprerArithmeticExp(exp.value.math_exp);
 			var.type = VarType::Integer;
 			break;
@@ -436,7 +459,17 @@ ReturnType Interpreter::interprerValueFunctionCall(
 
 	}
 
-	// else if ( ) { }
+	else if(exp.name == "to-number") {
+		check_params(exp.name, 1, exp.params);
+		return to_number(params[0]);
+
+	}
+
+	else if(exp.name == "to-text") {
+		check_params(exp.name, 1, exp.params);
+		return to_text(params[0]);
+
+	}
 
 	throw std::invalid_argument(
 		"Value error: \"" + exp.name + "\" is not a built in function"

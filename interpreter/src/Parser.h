@@ -13,6 +13,7 @@ namespace parser
 {
 	struct Statement;
 	struct Expression;
+	struct FunctionCall;
 
 	enum class Type {
 		IDENTIFIER,
@@ -39,13 +40,24 @@ namespace parser
 		CALL_TYPE
 	};
 
+	enum class NumberType {
+		Func,
+		Token
+	};
+
+	struct NumberExp {
+		FunctionCall* func_value;
+		token::Token token_value;
+
+		NumberType type;
+	};
 
 	struct MulExp {
-		token::Token value;
+		NumberExp number;
 	};
 
 	struct NumExp {
-		token::Token value;
+		NumberExp number;
 		vector<MulExp> multiplys;
 	};
 
@@ -132,6 +144,7 @@ namespace parser
 		File parseFile();
 	
 	private:
+		NumberExp parseNumberExp();
 		MulExp parseMulExp();
 		NumExp parseNumExp();
 		PlusExp parsePlusExp();

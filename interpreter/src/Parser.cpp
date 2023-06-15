@@ -73,11 +73,30 @@ Parser::Parser(const string& code) : index { 0 }, tokens { lexer::Lexer(code).le
 	tokens.push_back(token::TokenType::END_OF_TOKENS);
 }
 
+NumberExp Parser::parseNumberExp() {
+	NumberExp ret;
+
+	if (tokens[index].get_type() == token::TokenType::VALUE_FUNCTION) {
+		ret.func_value = new FunctionCall(parseFunctionCall());
+		ret.type = NumberType::Func;
+	}
+	
+	else {
+		ret.type = NumberType::Token;
+		ret.token_value = expect_token({
+			token::TokenType::NUMBER,
+			token::TokenType::IDENTI,
+		});		
+	}
+
+	return ret;
+}
+
 MulExp Parser::parseMulExp() {
 	MulExp ret;
 
 	expect_token(token::TokenType::MULTIPLY);
-	ret.value = expect_token({token::TokenType::NUMBER, token::TokenType::IDENTI});
+	ret.number = parseNumberExp();
 
 	return ret;
 }
@@ -86,7 +105,7 @@ NumExp Parser::parseNumExp() {
 	NumExp ret;
 	vector<MulExp> muls;
 
-	ret.value = expect_token({token::TokenType::NUMBER, token::TokenType::IDENTI});		
+	ret.number = parseNumberExp();
 
 	while (tokens[index].get_type() == token::TokenType::MULTIPLY)
 		muls.push_back(parseMulExp());

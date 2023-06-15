@@ -45,6 +45,14 @@ map<token::TokenType, map<string, map<string, token::TokenType>>> functions = {
 			{"in", {
 				{"param", token::TokenType::TEXT},
 				{"return", token::TokenType::TEXT}
+			}},
+			{"to-number", {
+				{"param", token::TokenType::TEXT},
+				{"return", token::TokenType::NUMBER}
+			}},
+			{"to-text", {
+				{"param", token::TokenType::NUMBER},
+				{"return", token::TokenType::TEXT}
 			}}
 		}
 	}
