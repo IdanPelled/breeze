@@ -4,28 +4,30 @@ using namespace parser;
 
 std::string get_token_name(token::TokenType value) {
 	std::map<std::string, token::TokenType> tokenMap = {
-    {"{", token::TokenType::OPEN},
-    {"}", token::TokenType::CLOSE},
-	{"(", token::TokenType::F_OPEN},
-	{")", token::TokenType::F_CLOSE},
-    {"when", token::TokenType::WHEN},
-    {"do", token::TokenType::DO},
-    {"otherwise", token::TokenType::OTHERWISE},
-    {"yes", token::TokenType::YES},
-    {"no", token::TokenType::NO},
-    {"variable", token::TokenType::IDENTI},
-    {"text", token::TokenType::TEXT},
-    {"number", token::TokenType::NUMBER},
-    {"bool", token::TokenType::BOOL},
-    {"set", token::TokenType::SET},
-    {"to", token::TokenType::TO},
-    {"+", token::TokenType::PLUS},
-    {"-", token::TokenType::MINUS},
-    {"*", token::TokenType::MULTIPLY},
-    {"=", token::TokenType::EQUAL},
-    {">", token::TokenType::GREATER},
-    {"<", token::TokenType::SMALLER},
-	{"<end of file>", token::TokenType::END_OF_TOKENS},
+		{"{", token::TokenType::OPEN},
+		{"}", token::TokenType::CLOSE},
+		{"(", token::TokenType::F_OPEN},
+		{")", token::TokenType::F_CLOSE},
+		{"when", token::TokenType::WHEN},
+		{"do", token::TokenType::DO},
+		{"otherwise", token::TokenType::OTHERWISE},
+		{"loop", token::TokenType::LOOP},
+		{"times", token::TokenType::TIMES},
+		{"yes", token::TokenType::YES},
+		{"no", token::TokenType::NO},
+		{"variable", token::TokenType::IDENTI},
+		{"text", token::TokenType::TEXT},
+		{"number", token::TokenType::NUMBER},
+		{"bool", token::TokenType::BOOL},
+		{"set", token::TokenType::SET},
+		{"to", token::TokenType::TO},
+		{"+", token::TokenType::PLUS},
+		{"-", token::TokenType::MINUS},
+		{"*", token::TokenType::MULTIPLY},
+		{"=", token::TokenType::EQUAL},
+		{">", token::TokenType::GREATER},
+		{"<", token::TokenType::SMALLER},
+		{"<end of file>", token::TokenType::END_OF_TOKENS},
 	};
 
     for (const auto& pair : tokenMap) {
@@ -86,7 +88,7 @@ NumberExp Parser::parseNumberExp() {
 		ret.token_value = expect_token({
 			token::TokenType::NUMBER,
 			token::TokenType::IDENTI,
-		});		
+		});  
 	}
 
 	return ret;
@@ -260,7 +262,7 @@ AssignmentExp Parser::parseAssignmentExp() {
 	
 	expect_token(token::TokenType::SET);
 	ret.identifier = expect_token(token::TokenType::IDENTI);
-	expect_token(token::TokenType::TO);
+	expect_token(token::TokenType::TO);	
 	ret.value = parseExpression();
 	ret.type = ret.value.type;
 	return ret;
@@ -276,6 +278,10 @@ Statement Parser::parseStatement() {
 		ret.when_statement = parseWhenExp();
 		break;
 
+	case token::TokenType::LOOP:
+		ret.type = StatementType::LOOP_TYPE;
+		ret.loop_statement = parseLoopExp();
+		break;
 	case token::TokenType::SET:
 		ret.type = StatementType::ASSIGNMENT_TYPE;
 		ret.assignment_statement = parseAssignmentExp();
@@ -333,6 +339,17 @@ WhenExp Parser::parseWhenExp() {
 
 	else
 		ret.otherwise = false;
+
+	return ret;
+}
+
+LoopExp Parser::parseLoopExp() {
+	LoopExp ret;
+	
+	expect_token(token::TokenType::LOOP);
+	ret.times = parseArithmeticExp();
+	expect_token(token::TokenType::TIMES);
+	ret.loop_block = parseBlockExp();
 
 	return ret;
 }

@@ -37,7 +37,7 @@ int Interpreter::interprerNumberExp(parser::NumberExp exp) {
 		ret = interprerValueFunctionCall(*(exp.func_value));
 		if (ret.type != VarType::Integer)
 			throw std::invalid_argument(
-				"Runtime error: Arithmetic operation must be on numbers, but Value function returned a non integer value"
+				"Runtime error: Arithmetic operation must be on numbers, but Value function returned a non-numbers value"
 			);
 
 		return ret.integer;
@@ -46,6 +46,7 @@ int Interpreter::interprerNumberExp(parser::NumberExp exp) {
 		switch (exp.token_value.get_type())
 		{
 		case token::TokenType::IDENTI:
+			std::cout << "~1\n";
 			var = get_var(exp.token_value.get_data("name"));
 			
 			if (var.type != VarType::Integer)
@@ -293,7 +294,6 @@ map<string, token::TokenType> get_function(const string& name) {
 
 void Interpreter::interprerAssignment(parser::AssignmentExp exp) {
 	Variable var;
-
 	var.name = exp.identifier.get_data("name");
 	switch (exp.type)
 	{
@@ -378,6 +378,14 @@ void Interpreter::interprerWhen(parser::WhenExp exp) {
 		interprerBlock(exp.otherwise_block);
 }
 
+void Interpreter::interprerLoop(parser::LoopExp exp) {
+	size_t times = interprerArithmeticExp(exp.times);
+
+	for (size_t counter = 0; counter < times; counter++)
+		interprerBlock(exp.loop_block);
+}
+
+
 void Interpreter::interprerStatement(parser::Statement exp) {
 	switch (exp.type)
 	{
@@ -387,6 +395,10 @@ void Interpreter::interprerStatement(parser::Statement exp) {
 
 	case parser::StatementType::WHEN_TYPE:
 		interprerWhen(exp.when_statement);
+		break;
+
+	case parser::StatementType::LOOP_TYPE:
+		interprerLoop(exp.loop_statement);
 		break;
 
 	case parser::StatementType::BLOCK_TYPE:

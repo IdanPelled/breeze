@@ -17,6 +17,8 @@ namespace token
 		WHEN,
 		DO,
 		OTHERWISE,
+		LOOP,
+		TIMES,
 		YES,
 		NO,
 		COMMA,

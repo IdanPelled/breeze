@@ -37,6 +37,7 @@ namespace interpreter
 		void interprerAssignment(parser::AssignmentExp exp);
 		void interprerBlock(parser::BlockExp exp);
 		void interprerWhen(parser::WhenExp exp);
+		void interprerLoop(parser::LoopExp exp);
 
 		void interprerActionFunctionCall(parser::FunctionCall exp);
 		ReturnType interprerValueFunctionCall(parser::FunctionCall exp);

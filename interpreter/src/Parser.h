@@ -36,6 +36,7 @@ namespace parser
 	enum class StatementType {
 		ASSIGNMENT_TYPE,
 		WHEN_TYPE,
+		LOOP_TYPE,
 		BLOCK_TYPE,
 		CALL_TYPE
 	};
@@ -125,8 +126,15 @@ namespace parser
 		BlockExp otherwise_block;
 	};
 
+	struct LoopExp {
+		ArithmeticExp times;
+		BlockExp loop_block;
+	};
+
+
 	struct Statement {
 		WhenExp when_statement;
+		LoopExp loop_statement;
 		AssignmentExp assignment_statement;
 		BlockExp block_statement;
 		FunctionCall function_statement;
@@ -156,6 +164,7 @@ namespace parser
 		Statement parseStatement();
 		BlockExp parseBlockExp();
 		WhenExp parseWhenExp();
+		LoopExp parseLoopExp();
 		vector<Expression> parseParams();
 		FunctionCall parseFunctionCall();
 

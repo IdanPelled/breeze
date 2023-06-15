@@ -16,6 +16,8 @@ map<string, token::token_t> keywords_map = {
 	{"when", token::TokenType::WHEN},
 	{"do", token::TokenType::DO},
 	{"otherwise", token::TokenType::OTHERWISE},
+	{"loop", token::TokenType::LOOP},
+	{"times", token::TokenType::TIMES},
 	{"set", token::TokenType::SET},
 	{"to", token::TokenType::TO}
 };
@@ -101,7 +103,7 @@ token::token_t Lexer::get_function_type(const string& func) {
 		}
 	}
 
-	return token::token_t();
+	throw std::invalid_argument("Invalid function");
 }
 
 bool Lexer::is_identifier(const string& word) {

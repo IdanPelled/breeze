@@ -6,7 +6,7 @@ CodeMirror.defineSimpleMode("pseudo", {
         { regex: /[0-9]+/, token: "number" },
         { regex: /(?:no|yes)\b/, token: "atom" },
         { regex: /(?:out|in|to-number|to-text)\b/, token: "def" },
-        { regex: /(?:set|to|when|do|otherwise)\b/, token: "keyword" },
+        { regex: /(?:set|to|when|do|otherwise|loop|times)\b/, token: "keyword" },
     ],
     meta: {
         lineComment: "//",
