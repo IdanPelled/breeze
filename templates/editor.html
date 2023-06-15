@@ -21,15 +21,19 @@
 {% block menu %}
   <li>
     <button id="export" onclick="downloadFile()" style="display: none;"></button>
-    <label for="export" title="Export File"><i class="fa-solid fa-download fa-xl"></i></label>
+    <label for="export" title="Export File"><i class="fa-solid fa-arrow-down fa-xl"></i></label>
   </li>
 
   <li>
     <input type="file" id="import" accept=".brz" onchange="openFile(event)" style="display: none;"/>
-    <label for="import"><i class="fa-solid fa-upload fa-xl"></i></label>
+    <label for="import"><i class="fa-solid fa-arrow-up-from-bracket fa-xl"></i></label>
   </li>
 
-  <li><a href=" {{ url_for('routes.documentation') }}"><i class="fa-solid fa-book fa-xl"></i></a></li>
+  <li>
+    <a href=" {{ url_for('routes.documentation') }}">
+      <i class="fa-regular fa-file-lines fa-xl"></i>
+    </a>
+  </li>
 
 {% endblock %}
   
@@ -38,7 +42,7 @@
     <div class="frame-header">
       <h2>Source Code</h2>
       <div>
-        <i id="loading" class="fa-solid fa-spinner fa-spin" style="display: none;"></i>
+        <i id="loading" class="fa-solid fa-rotate fa-spin" style="display: none;"></i>
         <button id="run" onclick="SendCode()">
           <i class="fa-solid fa-play fa-lg"></i>
         </button>
@@ -55,7 +59,7 @@
       <h2>Terminal</h2>
       <div>
         <button onclick="ClearOutput()">
-          <i class="fa-solid fa-broom fa-lg"></i>
+          <i class="fa-solid fa-trash-can fa-lg"></i>
         </button>
       </div>
     </div>

@@ -4,12 +4,10 @@
 {% block title %}Documentation{% endblock %}
 
 
-{% block head_script %}
-  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style/documentation.css') }}">
-{% endblock %}
-
 {% block menu %}
-  <li><a href=" {{ url_for('routes.editor') }}"><i class="fa-solid fa-laptop-code fa-xl"></i></a></li>
+  <li>
+    <a href=" {{ url_for('routes.editor') }}"><i class="fa-regular fa-pen-to-square fa-xl"></i></a>
+  </li>
 {% endblock %}
 
 

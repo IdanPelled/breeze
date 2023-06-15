@@ -41,7 +41,7 @@ main {
 }
 
 .frame {
-    height: 80%;
+    height: 95%;
     border: 1px solid var(--border);
     background-color: var(--white);
     overflow: scroll;

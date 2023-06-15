@@ -65,6 +65,11 @@ header ul li label, header ul li a{
     
 }
 
+header ul li {
+    color: var(--teal-blue);
+    background-color: transparent;
+}
+
 header ul li label, header ul li a{
     margin: 5px;
     color: var(--teal-blue);

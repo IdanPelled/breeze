@@ -55,3 +55,7 @@ nav li a:hover {
   line-height: 1.5;
   margin-bottom: 20px;
 }
+
+#content a {
+    color: var(--teal-blue);
+}
