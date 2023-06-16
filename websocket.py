@@ -20,7 +20,6 @@ def handle_stop(plain_token):
     if token in connections:
         conn = connections.pop(token)
         conn.terminate()
-        log.info(connections)
 
 
 @socketio.on('connect')

@@ -9,13 +9,30 @@ const send = (eventName, data) => {
     socket.emit(eventName, dataWithToken);
 };
 
+const Level = {
+    info: 'info',
+    error: 'error',
+    sucess: 'sucess'
+  };
+
+const Print = {
+    [Level.info]: (output) => {
+        AddOutput(output, "black")
+    },
+    [Level.error]: (output) => {
+        AddOutput(output, "red")
+    },
+    [Level.sucess]: (output) => {
+        AddOutput(output, "green")
+    }
+};
 
 function SendCode() {
     StartProgram();
     socket = io();
     
     socket.on('output', (output) => {
-        AddOutput(output);
+        Print[Level.info](output);
     });
 
     socket.on('input-request', (message) => {
@@ -24,6 +41,10 @@ function SendCode() {
 
     socket.on('end-program', (output) => {
         EndProgram(output);
+    });
+
+    socket.on('error', (output) => {
+        Print[Level.error](output);
     });
 }
 
@@ -62,7 +83,8 @@ function ToggleVisability(name, mode)
 
 function EndProgram(output)
 {
-    AddOutput(output);
+    if (output == "success")
+        Print[Level.sucess]("Program completed :)");
     Stop();
 }
 
@@ -95,15 +117,16 @@ function HideInput(input)
     document.getElementById("input-msg").textContent = "";
     ToggleVisability("input-frame", "none");
 
-    AddOutput(msg)
+    Print[Level.info](output);
 }
 
-function AddOutput(content)
+function AddOutput(content, color)
 {
     var paragraph = document.createElement("p");
     const out = document.getElementById("output")
     
     paragraph.textContent = content;
+    paragraph.style.color = color;
     out.appendChild(paragraph);
     out.scrollTop = out.scrollHeight;
 }

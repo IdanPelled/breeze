@@ -14,7 +14,7 @@ parser::Variable& Interpreter::get_var(string name) {
 	}
 	
 	catch (const std::out_of_range& e) {
-        throw std::invalid_argument("Key error: \"" + name + "\"");
+        throw std::invalid_argument("Undefined variable: \"" + name + "\"");
     }
 	
 }
@@ -509,7 +509,7 @@ int main(int argc, char** argv) {
 		}
 		
 		catch (const std::exception& e) {
-			std::cout << e.what() << std::endl;
+			std::cerr << e.what() << std::endl;
 		}
 	}
 	return 1;

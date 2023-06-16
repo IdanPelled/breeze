@@ -97,3 +97,7 @@ footer {
     color: var(--white);
     background-color: var(--teal-blue);
 }
+
+footer p a {
+    color: var(--white);
+}
