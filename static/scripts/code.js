@@ -4,14 +4,19 @@ CodeMirror.defineSimpleMode("pseudo", {
         // Rules for highlighting pseudo code
         { regex: /"(?:[^\\]|\\.)*?(?:"|$)/, token: "string" },
         { regex: /[0-9]+/, token: "number" },
+        { regex: /\/\/.*/, token: "comment" }, // Match comments starting with //
         { regex: /(?:no|yes)\b/, token: "atom" },
         { regex: /(?:out|in|to-number|to-text)\b/, token: "def" },
         { regex: /(?:set|to|when|do|otherwise|loop|times)\b/, token: "keyword" },
+        { regex: /[><=+\-*/]/, token: "operator" },
+        { regex: /[\{\}\(\)]/, token: "punctuation" },
+        { regex: /[^\s]+/, token: null }, // Match any remaining characters as null token
     ],
     meta: {
         lineComment: "//",
     },
 });
+
 
 function AdjustHeight(element) {
     element.style.height = "auto";

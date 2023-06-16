@@ -48,7 +48,7 @@ def execute_code(code, execution_token):
         if out:
             
             if (out.startswith(INPUT_MESSAGE)):
-                socketio.emit("input-request", out.lstrip(INPUT_MESSAGE))
+                socketio.emit("input-request", out.replace(INPUT_MESSAGE, ""))
             
             else:
                 socketio.emit("output", out)

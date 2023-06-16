@@ -2,32 +2,30 @@
 
 using namespace parser;
 
-std::string get_token_name(token::TokenType value) {
-	std::map<std::string, token::TokenType> tokenMap = {
-		{"{", token::TokenType::OPEN},
-		{"}", token::TokenType::CLOSE},
-		{"(", token::TokenType::F_OPEN},
-		{")", token::TokenType::F_CLOSE},
-		{"when", token::TokenType::WHEN},
-		{"do", token::TokenType::DO},
-		{"otherwise", token::TokenType::OTHERWISE},
-		{"loop", token::TokenType::LOOP},
-		{"times", token::TokenType::TIMES},
-		{"yes", token::TokenType::YES},
-		{"no", token::TokenType::NO},
-		{"variable", token::TokenType::IDENTI},
-		{"text", token::TokenType::TEXT},
-		{"number", token::TokenType::NUMBER},
-		{"bool", token::TokenType::BOOL},
-		{"set", token::TokenType::SET},
-		{"to", token::TokenType::TO},
-		{"+", token::TokenType::PLUS},
-		{"-", token::TokenType::MINUS},
-		{"*", token::TokenType::MULTIPLY},
-		{"=", token::TokenType::EQUAL},
-		{">", token::TokenType::GREATER},
-		{"<", token::TokenType::SMALLER},
-		{"<end of file>", token::TokenType::END_OF_TOKENS},
+string get_token_name(lexer::TokenType value) {
+	map<string, lexer::TokenType> tokenMap = {
+		{"{", lexer::TokenType::OPEN},
+		{"}", lexer::TokenType::CLOSE},
+		{"(", lexer::TokenType::CALL_OPEN},
+		{")", lexer::TokenType::CALL_CLOSE},
+		{"when", lexer::TokenType::WHEN},
+		{"do", lexer::TokenType::DO},
+		{"otherwise", lexer::TokenType::OTHERWISE},
+		{"loop", lexer::TokenType::LOOP},
+		{"times", lexer::TokenType::TIMES},
+		{"variable", lexer::TokenType::VARIABLE},
+		{"bool literal", lexer::TokenType::BOOLEAN_LITERAL},
+		{"text literal", lexer::TokenType::TEXT_LITERAL},
+		{"number literal", lexer::TokenType::NUMBER_LITERAL},
+		{"set", lexer::TokenType::SET},
+		{"to", lexer::TokenType::TO},
+		{"+", lexer::TokenType::PLUS},
+		{"-", lexer::TokenType::MINUS},
+		{"*", lexer::TokenType::MULTIPLY},
+		{"=", lexer::TokenType::EQUAL},
+		{">", lexer::TokenType::GREATER},
+		{"<", lexer::TokenType::SMALLER},
+		{"<end of file>", lexer::TokenType::END_OF_TOKENS},
 	};
 
     for (const auto& pair : tokenMap) {
@@ -38,47 +36,44 @@ std::string get_token_name(token::TokenType value) {
     return "<unnamed token>"; // Return an empty string if the enum value is not found in the map
 }
 
-inline token::Token Parser::next_token() {
+inline lexer::Token Parser::next_token() {
 	return tokens[index++];
 }
 
-void Parser::throw_unexpected_token(token::TokenType type) {
-	throw std::invalid_argument(
-		"Syntax Error: Unexpected token: \"" + get_token_name(type) + "\"."
-	);
-}
-token::Token Parser::expect_token(vector<token::TokenType> types) {
-	token::Token tk = next_token();
+lexer::Token Parser::expect_token(vector<lexer::TokenType> types) {
+	lexer::Token tk = next_token();
 	vector<string> names = {};
 	bool valid = false;
 
-	for (token::TokenType type: types) {
+	for (lexer::TokenType type: types) {
 		string token_name = get_token_name(type);
 		names.push_back(token_name);
 		
-		if (tk.get_type() == type)
+		if (tk.type == type)
 			valid = true;
 	}
 
 	if (!valid)
-		throw_unexpected_token(tk.get_type());
+		unexpected_token(tk);
 	
 	return tk;
 }
 
-token::Token Parser::expect_token(token::TokenType type) {
-	return expect_token(vector<token::TokenType>{type});
+lexer::Token Parser::expect_token(lexer::TokenType type) {
+	return expect_token(vector<lexer::TokenType>{type});
 }
 
-Parser::Parser(const string& code) : index { 0 }, tokens { lexer::Lexer(code).lex() }
+Parser::Parser(const string& code) : index { 0 }, tokens { lexer::Lexer().lex(code) }
 {
-	tokens.push_back(token::TokenType::END_OF_TOKENS);
+	lexer::Token t;
+	t.type = lexer::TokenType::END_OF_TOKENS;
+	tokens.push_back(t);
 }
 
 NumberExp Parser::parseNumberExp() {
 	NumberExp ret;
 
-	if (tokens[index].get_type() == token::TokenType::VALUE_FUNCTION) {
+	if (tokens[index].type == lexer::TokenType::VALUE_FUNCTION) {
 		ret.func_value = new FunctionCall(parseFunctionCall());
 		ret.type = NumberType::Func;
 	}
@@ -86,8 +81,8 @@ NumberExp Parser::parseNumberExp() {
 	else {
 		ret.type = NumberType::Token;
 		ret.token_value = expect_token({
-			token::TokenType::NUMBER,
-			token::TokenType::IDENTI,
+			lexer::TokenType::NUMBER_LITERAL,
+			lexer::TokenType::VARIABLE,
 		});  
 	}
 
@@ -97,7 +92,7 @@ NumberExp Parser::parseNumberExp() {
 MulExp Parser::parseMulExp() {
 	MulExp ret;
 
-	expect_token(token::TokenType::MULTIPLY);
+	expect_token(lexer::TokenType::MULTIPLY);
 	ret.number = parseNumberExp();
 
 	return ret;
@@ -109,7 +104,7 @@ NumExp Parser::parseNumExp() {
 
 	ret.number = parseNumberExp();
 
-	while (tokens[index].get_type() == token::TokenType::MULTIPLY)
+	while (tokens[index].type == lexer::TokenType::MULTIPLY)
 		muls.push_back(parseMulExp());
 
 	ret.multiplys = muls;
@@ -118,9 +113,9 @@ NumExp Parser::parseNumExp() {
 
 PlusExp Parser::parsePlusExp() {
 	PlusExp ret;
-	token::Token tk = expect_token({token::TokenType::PLUS, token::TokenType::MINUS});
+	lexer::Token tk = expect_token({lexer::TokenType::PLUS, lexer::TokenType::MINUS});
 	
-	if (tk.get_type() == token::TokenType::PLUS)
+	if (tk.type == lexer::TokenType::PLUS)
 		ret.is_plus = true;
 	else
 		ret.is_plus = false;
@@ -137,8 +132,8 @@ ArithmeticExp Parser::parseArithmeticExp() {
 	ret.num = parseNumExp();
 
 	while (
-		tokens[index].get_type() == token::TokenType::PLUS
-		|| tokens[index].get_type() == token::TokenType::MINUS
+		tokens[index].type == lexer::TokenType::PLUS
+		|| tokens[index].type == lexer::TokenType::MINUS
 	)
 		pluses.push_back(parsePlusExp());
 
@@ -149,50 +144,49 @@ ArithmeticExp Parser::parseArithmeticExp() {
 Expression Parser::parseExpression(bool is_operand = false) {
 	Expression ret;
 	int i = index;
-
-	switch (tokens[index].get_type())
+	switch (tokens[index].type)
 	{
-	case token::TokenType::IDENTI:
+	case lexer::TokenType::VARIABLE:
 		ret.identifier = next_token();
 		ret.type = Type::IDENTIFIER;
 		break;
 
-	case token::TokenType::NUMBER:
+	case lexer::TokenType::NUMBER_LITERAL:
 		ret.math_exp = parseArithmeticExp();
 		ret.type = Type::INTEGER;
 		break;
 
-	case token::TokenType::TEXT:
+	case lexer::TokenType::TEXT_LITERAL:
 		ret.string = next_token();
 		ret.type = Type::STRING;
 		break;
 
-	case token::TokenType::BOOL:
+	case lexer::TokenType::BOOLEAN_LITERAL:
 		ret.boolean = parseBoolExp();
 		ret.type = Type::BOOLEAN;
 		break;
 
-	case token::TokenType::VALUE_FUNCTION:
+	case lexer::TokenType::VALUE_FUNCTION:
 		ret.function = parseFunctionCall();
 		ret.type = Type::FUNCTION;
 		break;
 
 	default:
-		throw_unexpected_token(tokens[index].get_type());
+		unexpected_token(tokens[index]);
 	}
 
-	switch (tokens[index].get_type()) {
-	case token::TokenType::PLUS:
-	case token::TokenType::MINUS:
-	case token::TokenType::MULTIPLY:
+	switch (tokens[index].type) {
+	case lexer::TokenType::PLUS:
+	case lexer::TokenType::MINUS:
+	case lexer::TokenType::MULTIPLY:
 		index = i;
 		ret.type = Type::INTEGER;
 		ret.math_exp = parseArithmeticExp();
 		break;
 
-	case token::TokenType::EQUAL:
-	case token::TokenType::GREATER:
-	case token::TokenType::SMALLER:
+	case lexer::TokenType::EQUAL:
+	case lexer::TokenType::GREATER:
+	case lexer::TokenType::SMALLER:
 		if (!is_operand) {
 			index = i;
 			ret.type = Type::BOOLEAN;
@@ -206,20 +200,20 @@ Expression Parser::parseExpression(bool is_operand = false) {
 	return ret;
 }
 
-bool is_bool_operator(token::Token op) {
+bool is_bool_operator(lexer::Token op) {
 	return (
-		op.get_type() == token::TokenType::EQUAL
-		|| op.get_type() == token::TokenType::GREATER
-		|| op.get_type() == token::TokenType::SMALLER
+		op.type == lexer::TokenType::EQUAL
+		|| op.type == lexer::TokenType::GREATER
+		|| op.type == lexer::TokenType::SMALLER
 	);
 }  
 
 Operand Parser::parseOperand() {
 	Operand ret;
 	int i = index;
-	token::Token tk = next_token();
+	lexer::Token tk = next_token();
 	if (
-		tk.get_type() == token::TokenType::BOOL
+		tk.type == lexer::TokenType::BOOLEAN_LITERAL
 		&& !is_bool_operator(tokens[index])
 	)
 	{
@@ -243,10 +237,10 @@ BoolExp Parser::parseBoolExp() {
 	ret.left = parseOperand();
 
 	while (is_bool_operator(tokens[index])) {
-		token::Token op = expect_token({
-			token::TokenType::EQUAL, 
-			token::TokenType::GREATER, 
-			token::TokenType::SMALLER
+		lexer::Token op = expect_token({
+			lexer::TokenType::EQUAL, 
+			lexer::TokenType::GREATER, 
+			lexer::TokenType::SMALLER
 		});
 		tmp.op = op;
 		tmp.exp_value = new Expression(parseExpression(true));
@@ -260,9 +254,9 @@ BoolExp Parser::parseBoolExp() {
 AssignmentExp Parser::parseAssignmentExp() {
 	AssignmentExp ret;
 	
-	expect_token(token::TokenType::SET);
-	ret.identifier = expect_token(token::TokenType::IDENTI);
-	expect_token(token::TokenType::TO);	
+	expect_token(lexer::TokenType::SET);
+	ret.identifier = expect_token(lexer::TokenType::VARIABLE);
+	expect_token(lexer::TokenType::TO);	
 	ret.value = parseExpression();
 	ret.type = ret.value.type;
 	return ret;
@@ -271,37 +265,37 @@ AssignmentExp Parser::parseAssignmentExp() {
 Statement Parser::parseStatement() {
 	Statement ret;
 
-	switch (tokens[index].get_type())
+	switch (tokens[index].type)
 	{
-	case token::TokenType::WHEN:
+	case lexer::TokenType::WHEN:
 		ret.type = StatementType::WHEN_TYPE;
 		ret.when_statement = parseWhenExp();
 		break;
 
-	case token::TokenType::LOOP:
+	case lexer::TokenType::LOOP:
 		ret.type = StatementType::LOOP_TYPE;
 		ret.loop_statement = parseLoopExp();
 		break;
-	case token::TokenType::SET:
+	case lexer::TokenType::SET:
 		ret.type = StatementType::ASSIGNMENT_TYPE;
 		ret.assignment_statement = parseAssignmentExp();
 		break;
 
-	case token::TokenType::OPEN:
+	case lexer::TokenType::OPEN:
 		ret.type = StatementType::BLOCK_TYPE;
 		ret.block_statement = parseBlockExp();
 		break;
 	
-	case token::TokenType::ACTION_FUNCTION:
+	case lexer::TokenType::ACTION_FUNCTION:
 		ret.type = StatementType::CALL_TYPE;
 		ret.function_statement = parseFunctionCall();
 		break;
 	
-	case token::TokenType::VALUE_FUNCTION:
+	case lexer::TokenType::VALUE_FUNCTION:
 		throw std::invalid_argument("Value function must save the return value");
 
 	default:
-		throw_unexpected_token(tokens[index].get_type());
+		unexpected_token(tokens[index]);
 	}
 
 	return ret;
@@ -311,13 +305,13 @@ BlockExp Parser::parseBlockExp() {
 	BlockExp ret;
 	vector<Statement> statements;
 
-	expect_token(token::TokenType::OPEN);
+	expect_token(lexer::TokenType::OPEN);
 
-	while (tokens[index].get_type() != token::TokenType::CLOSE)
+	while (tokens[index].type != lexer::TokenType::CLOSE)
 		statements.push_back(parseStatement());
 
 	ret.statements = statements;
-	expect_token(token::TokenType::CLOSE);
+	expect_token(lexer::TokenType::CLOSE);
 
 	return ret;
 }
@@ -325,14 +319,14 @@ BlockExp Parser::parseBlockExp() {
 WhenExp Parser::parseWhenExp() {
 	WhenExp ret;
 
-	expect_token(token::TokenType::WHEN);
+	expect_token(lexer::TokenType::WHEN);
 	ret.exp = parseBoolExp();
-	expect_token(token::TokenType::DO);
+	expect_token(lexer::TokenType::DO);
 	ret.when_block = parseBlockExp();
 
-	if (tokens[index].get_type() == token::TokenType::OTHERWISE) {
-		expect_token(token::TokenType::OTHERWISE);
-		expect_token(token::TokenType::DO);
+	if (tokens[index].type == lexer::TokenType::OTHERWISE) {
+		expect_token(lexer::TokenType::OTHERWISE);
+		expect_token(lexer::TokenType::DO);
 		ret.otherwise = true;
 		ret.otherwise_block = parseBlockExp();
 	}
@@ -346,9 +340,9 @@ WhenExp Parser::parseWhenExp() {
 LoopExp Parser::parseLoopExp() {
 	LoopExp ret;
 	
-	expect_token(token::TokenType::LOOP);
+	expect_token(lexer::TokenType::LOOP);
 	ret.times = parseArithmeticExp();
-	expect_token(token::TokenType::TIMES);
+	expect_token(lexer::TokenType::TIMES);
 	ret.loop_block = parseBlockExp();
 
 	return ret;
@@ -356,37 +350,37 @@ LoopExp Parser::parseLoopExp() {
 
 vector<Expression> Parser::parseParams() {
 	vector<Expression> ret;
-	expect_token(token::TokenType::F_OPEN);
+	expect_token(lexer::TokenType::CALL_OPEN);
 
-	if (tokens[index].get_type() != token::TokenType::F_CLOSE)
+	if (tokens[index].type != lexer::TokenType::CALL_CLOSE)
 		ret.push_back(parseExpression());
 	
-	while (tokens[index].get_type() != token::TokenType::F_CLOSE) {
-		expect_token(token::TokenType::COMMA);
+	while (tokens[index].type != lexer::TokenType::CALL_CLOSE) {
+		expect_token(lexer::TokenType::COMMA);
 		ret.push_back(parseExpression());
 	}
 
-	expect_token(token::TokenType::F_CLOSE);
+	expect_token(lexer::TokenType::CALL_CLOSE);
 	return ret;
 }
 
 FunctionCall Parser::parseFunctionCall() {
 	FunctionCall ret;
 
-	token::Token function = expect_token(
+	lexer::Token function = expect_token(
 		{
-			token::TokenType::VALUE_FUNCTION,
-			token::TokenType::ACTION_FUNCTION
+			lexer::TokenType::VALUE_FUNCTION,
+			lexer::TokenType::ACTION_FUNCTION
 		}
 	);
 	
-	switch(function.get_type()) {
-	case token::TokenType::VALUE_FUNCTION:
-		ret.type = FuncType::Value;
+	switch(function.type) {
+	case lexer::TokenType::VALUE_FUNCTION:
+		ret.type = lexer::FunctionType::Value;
 		break;
 
-	case token::TokenType::ACTION_FUNCTION:
-		ret.type = FuncType::Action;
+	case lexer::TokenType::ACTION_FUNCTION:
+		ret.type = lexer::FunctionType::Action;
 		break;
 	
 	default:
@@ -396,7 +390,7 @@ FunctionCall Parser::parseFunctionCall() {
 
 	
 	ret.params = parseParams();
-	ret.name = function.get_data("name");
+	ret.name = function.value;
 	return ret;
 
 }
@@ -404,7 +398,7 @@ FunctionCall Parser::parseFunctionCall() {
 File Parser::parseFile() {
 	File ret;
 
-	while (tokens[index].get_type() != token::TokenType::END_OF_TOKENS)
+	while (tokens[index].type != lexer::TokenType::END_OF_TOKENS)
 		ret.code.push_back(parseStatement());
 
 	return ret;

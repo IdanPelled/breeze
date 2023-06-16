@@ -15,12 +15,10 @@ function SendCode() {
     socket = io();
     
     socket.on('output', (output) => {
-        console.info(output);
         AddOutput(output);
     });
 
     socket.on('input-request', (message) => {
-        console.error(message);
         ShowInput(message);
     });
 

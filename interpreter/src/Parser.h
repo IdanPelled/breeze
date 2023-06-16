@@ -2,12 +2,11 @@
 #include <vector>
 #include <numeric>
 
-#include "Token.h"
 #include "Lexer.h"
 
 using std::vector;
 
-std::string get_token_name(token::TokenType value);
+std::string get_token_name(lexer::TokenType value);
 
 namespace parser
 {
@@ -21,11 +20,6 @@ namespace parser
 		STRING,
 		BOOLEAN,
 		FUNCTION
-	};
-
-	enum class FuncType {
-		Action,
-		Value,
 	};
 
 	enum class OperandType {
@@ -46,9 +40,27 @@ namespace parser
 		Token
 	};
 
+	struct Variable {
+		string name;
+
+		int number_val;
+		bool boolean_val;
+		string text_val;
+
+		lexer::VarType type;
+	};
+
+	struct ReturnType {
+		string text;
+		int number;
+		bool boolean;
+
+		lexer::VarType type;
+	};
+
 	struct NumberExp {
 		FunctionCall* func_value;
-		token::Token token_value;
+		lexer::Token token_value;
 
 		NumberType type;
 	};
@@ -76,14 +88,14 @@ namespace parser
 
 	struct FunctionCall {
 		string name;
-		FuncType type;
+		lexer::FunctionType type;
 		vector<Expression> params;
 	};
 
 	struct Operand {
-		token::Token literal_value;
+		lexer::Token literal_value;
 		
-		token::Token op;
+		lexer::Token op;
 		Expression* exp_value;
 
 		OperandType type;
@@ -99,14 +111,14 @@ namespace parser
 		BoolExp boolean;
 		FunctionCall function;
 
-		token::Token identifier;
-		token::Token string;
+		lexer::Token identifier;
+		lexer::Token string;
 
 		Type type;
 	};
 
 	struct AssignmentExp {
-		token::Token identifier;
+		lexer::Token identifier;
 
 		Expression value;
 		Type type;
@@ -168,12 +180,11 @@ namespace parser
 		vector<Expression> parseParams();
 		FunctionCall parseFunctionCall();
 
-		inline token::Token next_token();
-		token::Token expect_token(vector<token::TokenType> types);
-		token::Token expect_token(token::TokenType type);
-		void throw_unexpected_token(token::TokenType type);
+		inline lexer::Token next_token();
+		lexer::Token expect_token(vector<lexer::TokenType> types);
+		lexer::Token expect_token(lexer::TokenType type);
 
 		int index;
-		vector<token::Token> tokens;
+		vector<lexer::Token> tokens;
 	};
 }

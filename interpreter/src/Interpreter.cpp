@@ -2,21 +2,13 @@
 
 using namespace interpreter;
 
-const string read_file(const string& path) {
-	std::ifstream file;
-	std::stringstream buffer;
-
-	file.open(path);
-	buffer << file.rdbuf();
-	return buffer.str();
-}
 
 Interpreter::Interpreter(const string& data)
 	: code { parser::Parser(data).parseFile() }
 {
 }
 
-Variable& Interpreter::get_var(string name) {
+parser::Variable& Interpreter::get_var(string name) {
 	try {
 		return vars.at(name);
 	}
@@ -28,34 +20,33 @@ Variable& Interpreter::get_var(string name) {
 }
 
 int Interpreter::interprerNumberExp(parser::NumberExp exp) {
-	ReturnType ret;
-	Variable var;
+	parser::ReturnType ret;
+	parser::Variable var;
 
 	switch (exp.type)
 	{
 	case parser::NumberType::Func:
 		ret = interprerValueFunctionCall(*(exp.func_value));
-		if (ret.type != VarType::Integer)
+		if (ret.type != lexer::VarType::Number)
 			throw std::invalid_argument(
 				"Runtime error: Arithmetic operation must be on numbers, but Value function returned a non-numbers value"
 			);
 
-		return ret.integer;
+		return ret.number;
 	
 	case parser::NumberType::Token:
-		switch (exp.token_value.get_type())
+		switch (exp.token_value.type)
 		{
-		case token::TokenType::IDENTI:
-			std::cout << "~1\n";
-			var = get_var(exp.token_value.get_data("name"));
+		case lexer::TokenType::VARIABLE:
+			var = get_var(exp.token_value.value);
 			
-			if (var.type != VarType::Integer)
+			if (var.type != lexer::VarType::Number)
 				throw std::invalid_argument("Arithmetic expression can use only variable of type number");
 			
-			return var.int_val;
+			return var.number_val;
 
-		case token::TokenType::NUMBER:
-			return stoi(exp.token_value.get_data("value"));
+		case lexer::TokenType::NUMBER_LITERAL:
+			return stoi(exp.token_value.value);
 		
 		default:
 			throw std::invalid_argument("Syntax Error: invalid token");
@@ -103,34 +94,34 @@ int Interpreter::interprerArithmeticExp(parser::ArithmeticExp exp)
 	return ret;
 }
 
-ReturnType Interpreter::interprerExpression(parser::Expression exp) {
-	ReturnType ret;
-	Variable var;
+parser::ReturnType Interpreter::interprerExpression(parser::Expression exp) {
+	parser::ReturnType ret;
+	parser::Variable var;
 
 	switch (exp.type)
 	{
 	case parser::Type::IDENTIFIER:
-		var = get_var(exp.identifier.get_data("name"));
+		var = get_var(exp.identifier.value);
 
 		switch (var.type)
 		{
-		case VarType::Integer:
-			ret.integer = var.int_val;
+		case lexer::VarType::Number:
+			ret.number = var.number_val;
 			break;
 
-		case VarType::Boolean:
-			ret.boolean = var.bool_val;
+		case lexer::VarType::Boolean:
+			ret.boolean = var.boolean_val;
 			break;
 
-		case VarType::String:
-			ret.String = var.string_val;
+		case lexer::VarType::Text:
+			ret.text = var.text_val;
 			break;
 		}
 		ret.type = var.type;
 		break;
 	
 	case parser::Type::BOOLEAN:
-		ret.type = VarType::Boolean;
+		ret.type = lexer::VarType::Boolean;
 
 		if(exp.boolean.operands.size() == 0)
 			ret.boolean = interprerOperand(exp.boolean.left).boolean;
@@ -139,13 +130,13 @@ ReturnType Interpreter::interprerExpression(parser::Expression exp) {
 		break;
 
 	case parser::Type::STRING:
-		ret.String = exp.string.get_data("value");
-		ret.type = VarType::String;
+		ret.text = exp.string.value;
+		ret.type = lexer::VarType::Text;
 		break;
 
 	case parser::Type::INTEGER:
-		ret.integer = interprerArithmeticExp(exp.math_exp);
-		ret.type = VarType::Integer;
+		ret.number = interprerArithmeticExp(exp.math_exp);
+		ret.type = lexer::VarType::Number;
 		break;
 	
 	case parser::Type::FUNCTION:
@@ -167,68 +158,68 @@ bool Interpreter::evaluate_bool(string s) {
 }
 
 
-bool evaluate_equal(ReturnType left, ReturnType right) {
+bool evaluate_equal(parser::ReturnType left, parser::ReturnType right) {
 	if (left.type != right.type)
 		throw std::invalid_argument("Value error: Cant compare diffrent types");
 
 	switch (left.type)
 	{
-	case VarType::Boolean:
+	case lexer::VarType::Boolean:
 		return left.boolean == right.boolean;
 
-	case VarType::String:
-		return left.String.compare(right.String) == 0;
+	case lexer::VarType::Text:
+		return left.text.compare(right.text) == 0;
 
-	case VarType::Integer:
-		return left.integer == right.integer;
+	case lexer::VarType::Number:
+		return left.number == right.number;
 	
 	default:
 		throw std::invalid_argument("Invalid type");
 	}
 }
 
-bool evaluate_grater(ReturnType left, ReturnType right) {
+bool evaluate_grater(parser::ReturnType left, parser::ReturnType right) {
 	if (left.type != right.type)
 		throw std::invalid_argument("Value error: Cant compare diffrent types");
 
 	switch (left.type)
 	{
-	case VarType::Boolean:
+	case lexer::VarType::Boolean:
 		throw std::invalid_argument("Cant use operator < on type boolean");
 
-	case VarType::String:
+	case lexer::VarType::Text:
 		throw std::invalid_argument("Cant use operator < on type string");
 
-	case VarType::Integer:
-		return left.integer > right.integer;
+	case lexer::VarType::Number:
+		return left.number > right.number;
 
 	default:
 		throw std::invalid_argument("Invalid type");
 	}
 }
 
-bool evaluate_smaller(ReturnType left, ReturnType right) {
+bool evaluate_smaller(parser::ReturnType left, parser::ReturnType right) {
 	if (left.type != right.type)
 		throw std::invalid_argument("Value error: Cant compare diffrent types");
 
 	switch (left.type)
 	{
-	case VarType::Boolean:
+	case lexer::VarType::Boolean:
 		throw std::invalid_argument("Cant use operator > on type boolean");
 
-	case VarType::String:
+	case lexer::VarType::Text:
 		throw std::invalid_argument("Cant use operator > on type string");
 
-	case VarType::Integer:
-		return left.integer < right.integer;
+	case lexer::VarType::Number:
+		return left.number < right.number;
 
 	default:
 		throw std::invalid_argument("Invalid type");
 	}
 }
 
-ReturnType Interpreter::interprerOperand(parser::Operand exp) {
-	ReturnType ret;
+parser::ReturnType Interpreter::interprerOperand(parser::Operand exp) {
+	parser::ReturnType ret;
 	
 	switch (exp.type)
 	{
@@ -236,8 +227,8 @@ ReturnType Interpreter::interprerOperand(parser::Operand exp) {
 		return interprerExpression(*exp.exp_value);
 	
 	case parser::OperandType::Literal:
-		ret.type = VarType::Boolean;
-		ret.boolean = evaluate_bool(exp.literal_value.get_data("value"));
+		ret.type = lexer::VarType::Boolean;
+		ret.boolean = evaluate_bool(exp.literal_value.value);
 		break;
 	}
 
@@ -246,24 +237,24 @@ ReturnType Interpreter::interprerOperand(parser::Operand exp) {
 
 
 bool Interpreter::interprerBoolExp(parser::BoolExp exp) {
-	ReturnType left = interprerOperand(exp.left);
-	ReturnType right, tmp;
+	parser::ReturnType left = interprerOperand(exp.left);
+	parser::ReturnType right, tmp;
 	bool ret = false;
 
 	for(auto operand : exp.operands) {
 		right = interprerOperand(operand);
 		
-		switch (operand.op.get_type())
+		switch (operand.op.type)
 		{
-		case token::TokenType::EQUAL:
+		case lexer::TokenType::EQUAL:
 			ret = evaluate_equal(left, right);
 			break;
 
-		case token::TokenType::GREATER:
+		case lexer::TokenType::GREATER:
 			ret = evaluate_grater(left, right);
 			break;
 
-		case token::TokenType::SMALLER:
+		case lexer::TokenType::SMALLER:
 			ret = evaluate_smaller(left, right);
 			break;
 
@@ -271,7 +262,7 @@ bool Interpreter::interprerBoolExp(parser::BoolExp exp) {
 			throw std::invalid_argument("Syntax error");
 		}
 
-		tmp.type = VarType::Boolean;
+		tmp.type = lexer::VarType::Boolean;
 		tmp.boolean = ret;
 		left = tmp;
 
@@ -280,7 +271,7 @@ bool Interpreter::interprerBoolExp(parser::BoolExp exp) {
 	return ret;
 }
 
-map<string, token::TokenType> get_function(const string& name) {
+map<string, lexer::VarType> get_function(const string& name) {
 	for (auto type: functions) {
 		
 		for (auto pair: type.second) {			
@@ -293,41 +284,41 @@ map<string, token::TokenType> get_function(const string& name) {
 }
 
 void Interpreter::interprerAssignment(parser::AssignmentExp exp) {
-	Variable var;
-	var.name = exp.identifier.get_data("name");
+	parser::Variable var;
+	var.name = exp.identifier.value;
 	switch (exp.type)
 	{
 	case parser::Type::INTEGER:
-		var.int_val = interprerArithmeticExp(exp.value.math_exp);
-		var.type = VarType::Integer;
+		var.number_val = interprerArithmeticExp(exp.value.math_exp);
+		var.type = lexer::VarType::Number;
 		break;
 
 	case parser::Type::STRING:
-		var.string_val = exp.value.string.get_data("value");
-		var.type = VarType::String;
+		var.text_val = exp.value.string.value;
+		var.type = lexer::VarType::Text;
 		break;
 
 	case parser::Type::BOOLEAN:
-		var.bool_val = interprerBoolExp(exp.value.boolean);
-		var.type = VarType::Boolean;
+		var.boolean_val = interprerBoolExp(exp.value.boolean);
+		var.type = lexer::VarType::Boolean;
 		break;
 
 	case parser::Type::IDENTIFIER:
-		switch (get_var(exp.value.identifier.get_data("name")).type)
+		switch (get_var(exp.value.identifier.value).type)
 		{
-		case VarType::Integer:
-			var.int_val = interprerArithmeticExp(exp.value.math_exp);
-			var.type = VarType::Integer;
+		case lexer::VarType::Number:
+			var.number_val = interprerArithmeticExp(exp.value.math_exp);
+			var.type = lexer::VarType::Number;
 			break;
 
-		case VarType::String:
-			var.string_val = exp.value.string.get_data("value");
-			var.type = VarType::String;
+		case lexer::VarType::Text:
+			var.text_val = exp.value.string.value;
+			var.type = lexer::VarType::Text;
 			break;
 
-		case VarType::Boolean:
-			var.bool_val = interprerBoolExp(exp.value.boolean);
-			var.type = VarType::Boolean;
+		case lexer::VarType::Boolean:
+			var.boolean_val = interprerBoolExp(exp.value.boolean);
+			var.type = lexer::VarType::Boolean;
 			break;
 
 		default:
@@ -338,19 +329,19 @@ void Interpreter::interprerAssignment(parser::AssignmentExp exp) {
 	case parser::Type::FUNCTION:
 		switch (get_function(exp.value.function.name)["return"])
 		{
-		case token::TokenType::BOOL:
-			var.int_val = interprerValueFunctionCall(exp.value.function).boolean;
-			var.type = VarType::Boolean;
+		case lexer::VarType::Boolean:
+			var.number_val = interprerValueFunctionCall(exp.value.function).boolean;
+			var.type = lexer::VarType::Boolean;
 			break;
 		
-		case token::TokenType::TEXT:
-			var.string_val = interprerValueFunctionCall(exp.value.function).String;
-			var.type = VarType::String;
+		case lexer::VarType::Text:
+			var.text_val = interprerValueFunctionCall(exp.value.function).text;
+			var.type = lexer::VarType::Text;
 			break;
 
-		case token::TokenType::NUMBER:
-			var.int_val = interprerValueFunctionCall(exp.value.function).integer;
-			var.type = VarType::Integer;
+		case lexer::VarType::Number:
+			var.number_val = interprerValueFunctionCall(exp.value.function).number;
+			var.type = lexer::VarType::Number;
 			break;
 		
 		default:
@@ -362,7 +353,7 @@ void Interpreter::interprerAssignment(parser::AssignmentExp exp) {
 		throw std::invalid_argument("Syntax error 5");
 	}
 
-	set_vat(var);
+	set_var(var);
 }
 
 void Interpreter::interprerBlock(parser::BlockExp exp) {
@@ -427,9 +418,9 @@ void check_params(
 
 }
 
-vector<ReturnType> Interpreter::interprerParams(vector<parser::Expression> params) {
-	vector<ReturnType> ret;
-	ReturnType tmp;
+vector<parser::ReturnType> Interpreter::interprerParams(vector<parser::Expression> params) {
+	vector<parser::ReturnType> ret;
+	parser::ReturnType tmp;
 	
 	for (auto param : params) {
 		tmp = interprerExpression(param);
@@ -440,10 +431,10 @@ vector<ReturnType> Interpreter::interprerParams(vector<parser::Expression> param
 }
 
 void Interpreter::interprerActionFunctionCall(parser::FunctionCall exp) {
-	if (exp.type != parser::FuncType::Action)
+	if (exp.type != lexer::FunctionType::Action)
 		throw std::invalid_argument("Expecting an Action Function");
 	
-	vector<ReturnType> parameters = interprerParams(exp.params);
+	vector<parser::ReturnType> parameters = interprerParams(exp.params);
 	if(exp.name == "out") {
 		check_params(exp.name, 1, exp.params);
 		output(parameters[0]);
@@ -457,13 +448,13 @@ void Interpreter::interprerActionFunctionCall(parser::FunctionCall exp) {
 }
 
 
-ReturnType Interpreter::interprerValueFunctionCall(
+parser::ReturnType Interpreter::interprerValueFunctionCall(
 	parser::FunctionCall exp
 ) {
-	if (exp.type != parser::FuncType::Value)
+	if (exp.type != lexer::FunctionType::Value)
 		throw std::invalid_argument("Expecting a Value Function");
 	
-	vector<ReturnType> params = interprerParams(exp.params);
+	vector<parser::ReturnType> params = interprerParams(exp.params);
 
 	if(exp.name == "in") {
 		check_params(exp.name, 1, exp.params);
@@ -494,7 +485,7 @@ void Interpreter::interprerFile(parser::File exp) {
 		interprerStatement(statement);
 }
 
-void Interpreter::set_vat(Variable& var)
+void Interpreter::set_var(parser::Variable& var)
 {
 	vars[var.name] = var;
 }

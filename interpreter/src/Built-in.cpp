@@ -4,17 +4,17 @@
 #define INPUT_MESSAGE "~<INPUT MESSAGE>~"
 
 // Action Functions
-void output(const ReturnType& var) {
+void output(const parser::ReturnType& var) {
     switch (var.type) {
-        case VarType::Integer:
-            PRINT(var.integer);
+        case lexer::VarType::Number:
+            PRINT(var.number);
             break;
         
-        case VarType::String:
-            PRINT(var.String);
+        case lexer::VarType::Text:
+            PRINT(var.text);
             break;
 
-        case VarType::Boolean:
+        case lexer::VarType::Boolean:
             if (var.boolean)
                 PRINT("yes");
             
@@ -34,15 +34,15 @@ void output(const ReturnType& var) {
 
 
 // Value Functions
-ReturnType input(const ReturnType& message) {
-    if (message.type != VarType::String)
+parser::ReturnType input(const parser::ReturnType& message) {
+    if (message.type != lexer::VarType::Text)
         throw std::invalid_argument("`in` expects a text param.");
 
-    ReturnType input;
-    input.type = VarType::String;
+    parser::ReturnType input;
+    input.type = lexer::VarType::Text;
 
-    std::cout << INPUT_MESSAGE << message.String << std::endl;
-    std::cin >> input.String;
+    std::cout << INPUT_MESSAGE << message.text << std::endl;
+    std::cin >> input.text;
     return input;
 }
 
@@ -55,40 +55,40 @@ bool is_numeric(const string& str) {
     return true;
 }
 
-ReturnType to_number(const ReturnType& text_number) {
-    if (text_number.type != VarType::String)
+parser::ReturnType to_number(const parser::ReturnType& text_number) {
+    if (text_number.type != lexer::VarType::Text)
         throw std::invalid_argument("`to-number` expects a text param.");
 
-    if (!is_numeric(text_number.String))
+    if (!is_numeric(text_number.text))
         throw std::invalid_argument("`to-number` must receive a nemeric text");
 
-    ReturnType ret;
+    parser::ReturnType ret;
     size_t pos = 0;
     int value;
     bool error = false;
 
-    try { value = std::stoi(text_number.String, &pos); }
+    try { value = std::stoi(text_number.text, &pos); }
     catch (const std::exception& e) { error = true; }
 
-    if (pos != text_number.String.length()) error = true;
+    if (pos != text_number.text.length()) error = true;
 
     if (error)
         throw std:: invalid_argument(
-            "Conversion error: Invalid text to convert: \"" +  text_number.String + "\"."
+            "Conversion error: Invalid text to convert: \"" +  text_number.text + "\"."
         );
 
-    ret.integer = value;
-    ret.type = VarType::Integer;
+    ret.number = value;
+    ret.type = lexer::VarType::Number;
     return ret;
 }
 
-ReturnType to_text(const ReturnType& number) {
-    if (number.type != VarType::Integer)
+parser::ReturnType to_text(const parser::ReturnType& number) {
+    if (number.type != lexer::VarType::Number)
         throw std::invalid_argument("`to-text` expects a number param.");
 
-    ReturnType ret;
-    string text = std::to_string(number.integer);
-    ret.String = text;
-    ret.type = VarType::String;
+    parser::ReturnType ret;
+    string text = std::to_string(number.number);
+    ret.text = text;
+    ret.type = lexer::VarType::Text;
     return ret;
 }

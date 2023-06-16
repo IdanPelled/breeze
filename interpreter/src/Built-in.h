@@ -1,36 +1,12 @@
 #pragma once
-#include "Token.h"
 #include "Parser.h"
 
-typedef enum class VarType {
-    Integer,
-    String,
-    Boolean,
-} var_t;
-
-struct Variable {
-    string name;
-
-    int int_val;
-    bool bool_val;
-    string string_val;
-
-    var_t type;
-};
-
-struct ReturnType {
-    string String;
-    int integer;
-    bool boolean;
-
-    var_t type;
-};
 
 // Action Functions
-void output(const ReturnType& var);
+void output(const parser::ReturnType& var);
 
 
 // Value Functions
-ReturnType input(const ReturnType& message);
-ReturnType to_number(const ReturnType& text_number);
-ReturnType to_text(const ReturnType& number);
+parser::ReturnType input(const parser::ReturnType& message);
+parser::ReturnType to_number(const parser::ReturnType& text_number);
+parser::ReturnType to_text(const parser::ReturnType& number);

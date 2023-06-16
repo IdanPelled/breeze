@@ -1,150 +1,240 @@
-#include <map>
-
 #include "Lexer.h"
-
-using std::map;
-using std::string;
 
 using namespace lexer;
 
-map<string, token::token_t> keywords_map = {
-	{"{", token::TokenType::OPEN},
-	{"}", token::TokenType::CLOSE},
-	{"(", token::TokenType::F_OPEN},
-	{")", token::TokenType::F_CLOSE},
-	{",", token::TokenType::COMMA},
-	{"when", token::TokenType::WHEN},
-	{"do", token::TokenType::DO},
-	{"otherwise", token::TokenType::OTHERWISE},
-	{"loop", token::TokenType::LOOP},
-	{"times", token::TokenType::TIMES},
-	{"set", token::TokenType::SET},
-	{"to", token::TokenType::TO}
+#define KEYWORD_REGEX R"(set|to|when|do|otherwise|loop|times)"
+#define IDENTIFIER_REGEX R"((out|in|to-number|to-text)|[a-zA-Z_-][a-zA-Z0-9_-]*)"
+#define LITERAL_REGEX R"(no|yes|[-+]?\d+|\"(?:\\.|[^\"])*\")"
+#define OPERATOR_REGEX R"([><=+\-*/])"
+#define PUNCTUATION_REGEX R"([\{\}\(\)])"
+#define COMMENT_REGEX R"(\/\/[^\n]*)"
+#define FULL_REGEX "(" COMMENT_REGEX "|" IDENTIFIER_REGEX "|" KEYWORD_REGEX "|" LITERAL_REGEX "|" OPERATOR_REGEX "|" PUNCTUATION_REGEX "|[^a-zA-Z0-9\\s])"
+
+map<string, TokenType> keywords {
+    {"when", TokenType::WHEN},
+    {"do", TokenType::DO},
+    {"otherwise", TokenType::OTHERWISE},
+    {"loop", TokenType::LOOP},
+    {"times", TokenType::TIMES},
+    {"set", TokenType::SET},
+    {"to", TokenType::TO},
 };
 
-map<string, token::token_t> operators_map = {
-	{"+", token::TokenType::PLUS},
-	{"-", token::TokenType::MINUS},
-	{"*", token::TokenType::MULTIPLY},
-	{"=", token::TokenType::EQUAL},
-	{">", token::TokenType::GREATER},
-	{"<", token::TokenType::SMALLER},
-
+map<string, TokenType> operators {
+    {"+", TokenType::PLUS},
+    {"-", TokenType::MINUS},
+    {"*", TokenType::MULTIPLY},
+    {"/", TokenType::DIVIDE},
+    {"=", TokenType::EQUAL},
+    {">", TokenType::GREATER},
+    {"<", TokenType::SMALLER},
 };
 
-map<token::TokenType, map<string, map<string, token::TokenType>>> functions = {
+map<string, TokenType> punctuations {
+    {"{", TokenType::OPEN},
+    {"}", TokenType::CLOSE},
+    {"(", TokenType::CALL_OPEN},
+    {")", TokenType::CALL_CLOSE},
+    {",", TokenType::COMMA},
+};
+
+map<FunctionType, map<string, map<string, VarType>>> functions = {
 	{
-		token::TokenType::ACTION_FUNCTION,
+		FunctionType::Action,
 		{
 			{"out", {
-				{"param", token::TokenType::IDENTI}
+				{"param", VarType::Text}
 			}}
 		}
 	},
 	{
-		token::TokenType::VALUE_FUNCTION,
+		FunctionType::Value,
 		{
 			{"in", {
-				{"param", token::TokenType::TEXT},
-				{"return", token::TokenType::TEXT}
+				{"param", VarType::Text},
+				{"return", VarType::Text}
 			}},
 			{"to-number", {
-				{"param", token::TokenType::TEXT},
-				{"return", token::TokenType::NUMBER}
+				{"param", VarType::Text},
+				{"return", VarType::Number}
 			}},
 			{"to-text", {
-				{"param", token::TokenType::NUMBER},
-				{"return", token::TokenType::TEXT}
+				{"param", VarType::Number},
+				{"return", VarType::Text}
 			}}
 		}
 	}
 };
 
-Lexer::Lexer(const string& row) : row{ std::istringstream(row) }
-{
+void unexpected_token(const lexer::Token& token) {
+    throw std::invalid_argument("Unexpected token: \"" + token.value + "\"");
 }
 
-const string Lexer::next_word() {
-	string word;
-	row >> word;
-	return word;
-}
+Lexer::Lexer() {}
 
-inline bool is_in_map(const string& key, const map<string, token::token_t>& dict) {
-	return dict.find(key) != dict.end();
-}
+const vector<Token> Lexer::lex(const string& code) {
+	vector<Token> tokens;
+	tokenize(tokens, code);
+	classify(tokens);
 
-bool Lexer::is_operator(const string& word) {
-	return is_in_map(word, operators_map);
-}
-
-bool Lexer::is_keyword(const string& word) {
-	return is_in_map(word, keywords_map);
-}
-
-bool Lexer::is_function(const string& word) {
-	for (auto type: functions) {
-		
-		for (auto pair: type.second) {			
-			if (pair.first == word)
-				return true;
-		}
-	}
-
-	return false;
-}
-
-token::token_t Lexer::get_function_type(const string& func) {
-	for (auto type: functions) {
-		
-		for (auto pair: type.second) {			
-			if (pair.first == func)
-				return type.first;
-		}
-	}
-
-	throw std::invalid_argument("Invalid function");
-}
-
-bool Lexer::is_identifier(const string& word) {
-	return isalpha(word[0]);
-}
-
-bool Lexer::is_literal(const string& word) {
-	return (
-		word == "yes"
-		|| word == "no"
-		|| word[0] == '\"'
-		|| (isdigit(word[0]) || word[0] == '-')
-	);
-}
-
-token::Token Lexer::tokenize(const string& word) {
-	if (is_keyword(word))
-		return token::KeyWord(keywords_map[word]);
-
-	if (is_operator(word))
-		return token::Operator(operators_map[word]);
-
-	if (is_literal(word))
-		return token::Literal(word);
-
-	if (is_function(word))
-		return token::Function(word, get_function_type(word));
-
-	if (is_identifier(word))
-		return token::Identifier(word);
-
-	throw std::invalid_argument("Undifined token: " + word);
-}
-
-const vector<token::Token> Lexer::lex()
-{
-	string word;
-	vector<token::Token> tokens;
-	
-	while ((word = next_word()) != "")
-		tokens.push_back(tokenize(word));
-	
 	return tokens;
+}
+
+void Lexer::tokenize(vector<Token>& tokens, const string& input) {
+    
+    std::regex keywordRegex(KEYWORD_REGEX);
+    std::regex identifierRegex(IDENTIFIER_REGEX);
+    std::regex literalRegex(LITERAL_REGEX);
+    std::regex operatorRegex(OPERATOR_REGEX);
+    std::regex punctuationRegex(PUNCTUATION_REGEX);
+    std::regex commentRegex(COMMENT_REGEX);
+
+    std::regex tokenRegex(FULL_REGEX);
+
+    auto words_begin = std::sregex_iterator(input.begin(), input.end(), tokenRegex);
+    auto words_end = std::sregex_iterator();
+
+    for (std::sregex_iterator it = words_begin; it != words_end; ++it) {
+        std::smatch match = *it;
+        std::string token = match.str();
+
+        Token t;
+        t.value = token;
+
+        if (std::regex_match(token, commentRegex)) {
+            continue;
+        }
+
+        if (std::regex_match(token, keywordRegex)) {
+            t.category = TokenCategory::KEYWORD;
+
+        } else if (std::regex_match(token, identifierRegex)) {
+            t.category = TokenCategory::IDENTIFIER;
+
+        } else if (std::regex_match(token, literalRegex)) {
+            t.category = TokenCategory::LITERAL;
+
+        } else if (std::regex_match(token, operatorRegex)) {
+            t.category = TokenCategory::OPERATOR;
+
+        } else if (std::regex_match(token, punctuationRegex)) {
+            t.category = TokenCategory::PUNCTUATION;
+        } else {
+            throw std::runtime_error("Invalid token found: " + token);
+        }
+
+        tokens.push_back(t);
+    }
+}
+
+template<typename T>
+inline bool Lexer::is_in_map(const string& key, const map<string, T>& dict) {
+    return dict.find(key) != dict.end();
+}
+
+TokenType Lexer::get_keyword_type(const Token& token) {
+    if (!is_in_map<TokenType>(token.value, keywords))
+        unexpected_token(token);
+    
+    return keywords.at(token.value);
+}
+
+TokenType Lexer::get_operator_type(const Token& token) {
+    if (!is_in_map<TokenType>(token.value, operators))
+        unexpected_token(token);
+    
+    return operators.at(token.value);
+}
+
+TokenType Lexer::get_punctuation_type(const Token& token) {
+    if (!is_in_map<TokenType>(token.value, punctuations))
+        unexpected_token(token);
+    
+    return punctuations.at(token.value);
+}
+
+bool Lexer::is_function(const Token& token) {
+    for (auto pair : functions) {
+        if (is_in_map<map<string, VarType>>(token.value, pair.second))
+            return true;
+    }
+
+    return false;
+}
+
+FunctionType Lexer::get_function_type(const Token& token) {
+    for (auto pair : functions) {
+        if (is_in_map<map<string, VarType>>(token.value, pair.second))
+            return pair.first;
+    }
+
+    unexpected_token(token);
+}
+
+TokenType Lexer::get_identifier_type(const Token& token) {
+    if (is_function(token)) {
+        FunctionType type = get_function_type(token);
+        
+        if (type == FunctionType::Action)
+            return TokenType::ACTION_FUNCTION;
+        
+        if (type == FunctionType::Value)
+            return TokenType::VALUE_FUNCTION;
+
+        unexpected_token(token);
+    }
+    
+    return TokenType::VARIABLE;
+}
+
+inline bool Lexer::is_bool_literal(const string& str) {
+    return (str == "yes" || str == "no");
+}
+
+inline bool Lexer::is_text_literal(const string& str) {
+    return str[0] == '"';
+}
+
+TokenType Lexer::get_literal_type(Token& token) {
+    if (Lexer::is_bool_literal(token.value))
+        return TokenType::BOOLEAN_LITERAL;
+    
+    else if (is_text_literal(token.value)){
+        token.value = token.value.substr(1, token.value.length() - 2);
+        return TokenType::TEXT_LITERAL;
+    }
+
+
+    return TokenType::NUMBER_LITERAL;
+}
+
+void Lexer::classify(vector<Token>& tokens) {
+    for (Token& token : tokens) {
+        
+        switch (token.category) {
+            case TokenCategory::KEYWORD:
+                token.type = get_keyword_type(token);
+                break;
+
+            case TokenCategory::IDENTIFIER:
+                token.type = get_identifier_type(token);
+                break;
+
+            case TokenCategory::LITERAL:
+                token.type = get_literal_type(token);
+                break;
+
+            case TokenCategory::OPERATOR:
+                token.type = get_operator_type(token);
+                break;
+
+            case TokenCategory::PUNCTUATION:
+                token.type = get_punctuation_type(token);
+                break;
+
+            default:
+                unexpected_token(token);
+                break;
+        }
+    }
 }
