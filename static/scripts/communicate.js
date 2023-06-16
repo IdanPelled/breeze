@@ -67,12 +67,14 @@ function EndProgram(output)
 }
 
 function Stop() {
+    socket.emit("stop", document.cookie);
     DeleteCookie("execution_token");
+
     ToggleButton("run", false);
     ToggleButton("stop", true);
     ToggleVisability("loading", "none");
-
-    // socket.emit("stop", document.cookie);
+    ToggleVisability("input-frame", "none");
+    
     socket.close();
 }
 

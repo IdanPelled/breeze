@@ -1,6 +1,6 @@
 from factory import create_app, socketio
-from log import log
+from log import setup_logger
 
 app = create_app()
-app.logger.addHandler(log)
+setup_logger(app)
 socketio.run(app)

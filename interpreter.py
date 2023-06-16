@@ -37,7 +37,8 @@ def run_code(code: str, token: str) -> Generator[str, None, bool]:
         flag = output != '' or process.poll() is None
     
     yield None
-    del connections[token]
+    if token in connections:
+        del connections[token]
     yield return_statuc_code == 0
 
 

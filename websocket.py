@@ -1,10 +1,11 @@
 from logging import getLogger
 from flask import request
-from utils import predicate
+from utils import predicate, remove_token_prefix
 from interpreter import pass_input
 from factory import socketio, connections
 
 log = getLogger(__name__)
+
 
 @socketio.on('input-response')
 @predicate
@@ -13,9 +14,14 @@ def handle_input(process, msg):
 
 
 @socketio.on('stop')
-def handle_stop(token):
+def handle_stop(plain_token):
+    token = remove_token_prefix(plain_token)
+    
     if token in connections:
-        del connections[token]
+        conn = connections.pop(token)
+        conn.terminate()
+        log.info(connections)
+
 
 @socketio.on('connect')
 def handle_connect():
