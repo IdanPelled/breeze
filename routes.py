@@ -10,26 +10,54 @@ routes_app = Blueprint('routes', __name__)
 
 @routes_app.route('/editor', methods=['GET'])
 def editor():
+    """
+    Renders the editor.html template.
+
+    Returns:
+        The rendered editor.html template.
+    """
+
     return render_template("editor.html")
 
 
 @routes_app.route('/documentation', methods=['GET'])
 def documentation():
+    """
+    Renders the documentation.html template.
+
+    Returns:
+        The rendered documentation.html template.
+    """
+
     return render_template("documentation.html")
 
 
 @routes_app.route('/', methods=['GET'])
 def index():
+    """
+    Renders the index.html template.
+
+    Returns:
+        The rendered index.html template.
+    """
+
     return render_template("index.html")
 
 
 @routes_app.route('/execute', methods=['POST'])
 def execute():
+    """
+    Executes the provided code asynchronously and returns an HTTP response.
+
+    Returns:
+        The HTTP response indicating the status of the code execution.
+    """
+    
     code = request.json.get("code")
     response = make_response()
 
     if request.cookies.get('execution_token') is None:
-
+       
         execution_token = hex(secrets.randbelow(2 ** 1000))
         execution_thread = threading.Thread(
             target=execute_code,
@@ -46,9 +74,14 @@ def execute():
     return response
 
 
-
 @routes_app.route('/download', methods=['GET'])
 def download_breeze():
-    folder_path = './interpreter/release/breeze.zip'
+    """
+    Downloads the breeze.zip file.
 
+    Returns:
+        The breeze.zip file as an attachment for download.
+    """
+
+    folder_path = './interpreter/release/breeze.zip'
     return send_file(folder_path, as_attachment=True)

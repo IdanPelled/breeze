@@ -4,7 +4,7 @@ CodeMirror.defineSimpleMode("pseudo", {
         // Rules for highlighting pseudo code
         { regex: /"(?:[^\\]|\\.)*?(?:"|$)/, token: "string" },
         { regex: /[0-9]+/, token: "number" },
-        { regex: /\/\/.*/, token: "comment" }, // Match comments starting with //
+        { regex: /\/\/.*/, token: "comment" }, // Match comments starting with "//"
         { regex: /(?:no|yes)\b/, token: "atom" },
         { regex: /(?:out|in|to-number|to-text)\b/, token: "def" },
         { regex: /(?:set|to|when|do|otherwise|loop|times)\b/, token: "keyword" },
@@ -17,7 +17,11 @@ CodeMirror.defineSimpleMode("pseudo", {
     },
 });
 
-
+/**
+ * Adjusts the height of the element to fit its content.
+ * @param {HTMLElement} element - The element to adjust the height of.
+ * @returns {void}
+ */
 function AdjustHeight(element) {
     element.style.height = "auto";
     element.style.height = element.scrollHeight + "px";
@@ -29,21 +33,38 @@ var codeEditor = CodeMirror.fromTextArea(document.getElementById("code"), {
     lineNumbers: true,
 });
 
+/**
+ * Clears the output element.
+ * @returns {void}
+ */
 function ClearOutput() {
     var element = document.getElementById("output");
     element.innerHTML = "";
 }
 
+/**
+ * Sets focus on the input element.
+ * @returns {void}
+ */
 function FocusOnInput() {
     const input = document.getElementById('input');
     input.focus();
 }
 
+/**
+ * Adjusts the height of the element to fit its content.
+ * @param {HTMLElement} element - The element to adjust the height of.
+ * @returns {void}
+ */
 function AdjustHeight(element) {
     element.style.height = "auto";
     element.style.height = element.scrollHeight + "px";
 }
 
+/**
+ * Downloads the code as a file.
+ * @returns {void}
+ */
 function downloadFile() {
     var code = codeEditor.getValue();
     var filename = 'code.brz';
@@ -60,6 +81,11 @@ function downloadFile() {
     URL.revokeObjectURL(url);
 }
 
+/**
+ * Opens a file and sets its content in the code editor.
+ * @param {Event} event - The file input change event.
+ * @returns {void}
+ */
 function openFile(event) {
     var file = event.target.files[0];
     var reader = new FileReader();

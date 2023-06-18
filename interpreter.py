@@ -10,11 +10,34 @@ INPUT_MESSAGE = "~<INPUT MESSAGE>~"
 
 
 def pass_input(process: subprocess.Popen, data: str) -> None:
+    """
+    Passes the input data to the subprocess.
+
+    Args:
+        process (subprocess.Popen): The subprocess to pass the input to.
+        data (str): The input data to be passed.
+
+    Returns:
+        None
+    """
+
     process.stdin.write(data + '\n')
     process.stdin.flush()
 
 
 def run_code(code: str, token: str) -> Generator[Tuple[str, str], None, bool]:
+    """
+    Runs the code using the interpreter subprocess.
+
+    Args:
+        code (str): The code to be executed.
+        token (str): The token associated with the code execution.
+
+    Yields:
+        Tuple[str, str]: The output and error messages yielded during the code execution.
+        bool: The final success status of the code execution.
+    """
+
     process = subprocess.Popen(
         [EXE_PATH, code],
         stdin=subprocess.PIPE,
@@ -24,7 +47,7 @@ def run_code(code: str, token: str) -> Generator[Tuple[str, str], None, bool]:
     )
 
     connections.update({token: process})
-    return_statuc_code = process.poll()
+    return_status_code = process.poll()
     flag = True
 
     while flag:
@@ -34,16 +57,26 @@ def run_code(code: str, token: str) -> Generator[Tuple[str, str], None, bool]:
         if output or error:
             yield output, error
 
-        return_statuc_code = process.poll()
+        return_status_code = process.poll()
         flag = output != '' or error != '' or process.poll() is None
     
     yield None, None
     if token in connections:
         del connections[token]
-    yield return_statuc_code == 0
+    yield return_status_code == 0
 
 
 def handle_out(message: str):
+    """
+    Handles the output message received from the interpreter subprocess.
+
+    Args:
+        message (str): The output message.
+
+    Returns:
+        None
+    """
+
     if (message.startswith(INPUT_MESSAGE)):
         socketio.emit("input-request", message.replace(INPUT_MESSAGE, ""))
     
@@ -52,10 +85,30 @@ def handle_out(message: str):
 
 
 def handle_error(message: str):
+    """
+    Handles the error message received from the interpreter subprocess.
+
+    Args:
+        message (str): The error message.
+
+    Returns:
+        None
+    """
+
     socketio.emit("error", message)
 
 
 def handle_end_program(success: bool):
+    """
+    Handles the end of the program execution.
+
+    Args:
+        success (bool): The success status of the program execution.
+
+    Returns:
+        None
+    """
+
     if success:
         socketio.emit("end-program", "success")
     
@@ -64,6 +117,17 @@ def handle_end_program(success: bool):
 
 
 def execute_code(code, execution_token):
+    """
+    Executes the code and sends the output and error messages via SocketIO.
+
+    Args:
+        code (str): The code to be executed.
+        execution_token (str): The token associated with the code execution.
+
+    Returns:
+        None
+    """
+    
     time.sleep(0.1)
     generator = run_code(code, execution_token)
     for out, error in generator:

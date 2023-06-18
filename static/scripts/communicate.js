@@ -1,36 +1,52 @@
 var socket;
 
+/**
+ * Sends data to the server using the specified event name.
+ * @param {string} eventName - The name of the event to emit.
+ * @param {any} data - The data to send along with the event.
+ * @returns {void}
+ */
 const send = (eventName, data) => {
     const dataWithToken = {
-      token: document.cookie,
-      payload: data
+        token: document.cookie,
+        payload: data
     };
-    
+
     socket.emit(eventName, dataWithToken);
 };
 
+/**
+ * Enum for different output levels.
+ */
 const Level = {
     info: 'info',
     error: 'error',
-    sucess: 'sucess'
-  };
+    success: 'success'
+};
 
+/**
+ * Object that contains functions to handle different log levels.
+ */
 const Print = {
     [Level.info]: (output) => {
-        AddOutput(output, "black")
+        AddOutput(output, "black");
     },
     [Level.error]: (output) => {
-        AddOutput(output, "red")
+        AddOutput(output, "red");
     },
-    [Level.sucess]: (output) => {
-        AddOutput(output, "green")
+    [Level.success]: (output) => {
+        AddOutput(output, "green");
     }
 };
 
+/**
+ * Sends the code to the server and sets up event listeners for output, input requests, program end, and errors.
+ * @returns {void}
+ */
 function SendCode() {
     StartProgram();
     socket = io();
-    
+
     socket.on('output', (output) => {
         Print[Level.info](output);
     });
@@ -48,19 +64,17 @@ function SendCode() {
     });
 }
 
-function Connect()
-{
-    
-}
-
-function StartProgram()
-{
+/**
+ * Starts the program by sending the code to the server.
+ * @returns {void}
+ */
+function StartProgram() {
     var code = codeEditor.getValue();
     var url = window.location.origin + "/execute";
 
     fetch(url, {
         method: 'POST',
-        body: JSON.stringify({code: code}),
+        body: JSON.stringify({ code: code }),
         headers: {
             'Content-Type': 'application/json'
         },
@@ -68,84 +82,122 @@ function StartProgram()
 
     ToggleButton("run", true);
     ToggleButton("stop", false);
-    ToggleVisability("loading", "inline-block");
+    ToggleVisibility("loading", "inline-block");
 }
 
-function ToggleButton(name, state)
-{
+/**
+ * Toggles the disabled state of a button.
+ * @param {string} name - The name or ID of the button.
+ * @param {boolean} state - The disabled state of the button.
+ * @returns {void}
+ */
+function ToggleButton(name, state) {
     document.getElementById(name).disabled = state;
 }
 
-function ToggleVisability(name, mode)
-{
+/**
+ * Toggles the visibility of an element.
+ * @param {string} name - The name or ID of the element.
+ * @param {string} mode - The display mode to set (e.g., "none", "block", "inline-block").
+ * @returns {void}
+ */
+function ToggleVisibility(name, mode) {
     document.getElementById(name).style.display = mode;
 }
 
-function EndProgram(output)
-{
-    if (output == "success")
-        Print[Level.sucess]("Program completed :)");
+/**
+ * Handles the program end event and prints a success message if the output is "success".
+ * @param {string} output - The output received from the server.
+ * @returns {void}
+ */
+function EndProgram(output) {
+    if (output == "success") {
+        Print[Level.success]("Program completed :)");
+    }
     Stop();
 }
 
-function Stop() {
+/**
+ * Stops the program execution by emitting a "stop" event to the server, deleting the execution token cookie, and closing the socket connection.
+ * @returns {void}
+ */
+ function Stop() {
     socket.emit("stop", document.cookie);
     DeleteCookie("execution_token");
 
     ToggleButton("run", false);
     ToggleButton("stop", true);
-    ToggleVisability("loading", "none");
-    ToggleVisability("input-frame", "none");
-    
+    ToggleVisibility("loading", "none");
+    ToggleVisibility("input-frame", "none");
+
     socket.close();
 }
 
-function ShowInput(message)
-{
+/**
+ * Displays the input request message on the page.
+ * @param {string} message - The input request message received from the server.
+ * @returns {void}
+ */
+function ShowInput(message) {
     console.info(message);
     document.getElementById("input-msg").textContent = message;
-    ToggleVisability("input-frame", "block");
+    ToggleVisibility("input-frame", "block");
 }
 
-function HideInput(input)
-{
-    msg = (
-        document.getElementById("input-msg").textContent
-        + ": " + input
-    )
-    
+/**
+ * Hides the input frame after receiving the user input and displays the input in the output section.
+ * @param {string} input - The user input.
+ * @returns {void}
+ */
+function HideInput(input) {
+    const msg = document.getElementById("input-msg").textContent + ": " + input;
+
     document.getElementById("input-msg").textContent = "";
-    ToggleVisability("input-frame", "none");
+    ToggleVisibility("input-frame", "none");
 
-    Print[Level.info](output);
+    Print[Level.info](msg);
 }
 
-function AddOutput(content, color)
-{
+/**
+ * Adds output content to the output section.
+ * @param {string} content - The output content to be added.
+ * @param {string} color - The color of the output text.
+ * @returns {void}
+ */
+function AddOutput(content, color) {
     var paragraph = document.createElement("p");
-    const out = document.getElementById("output")
-    
+    const out = document.getElementById("output");
+
     paragraph.textContent = content;
     paragraph.style.color = color;
     out.appendChild(paragraph);
     out.scrollTop = out.scrollHeight;
 }
 
-function DeleteCookie(cookieName)
-{
+/**
+ * Deletes a cookie by setting its expiration date to the past.
+ * @param {string} cookieName - The name of the cookie to be deleted.
+ * @returns {void}
+ */
+function DeleteCookie(cookieName) {
     document.cookie = cookieName + "=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
 }
 
-function HandleKeyPress(event, element)
-{
-    // check for entry press
+/**
+ * Handles key press events, specifically the Enter key press, for the input element.
+ * @param {object} event - The key press event object.
+ * @param {object} element - The input element.
+ * @returns {void}
+ */
+function HandleKeyPress(event, element) {
+    // Check for Enter key press without Shift key
     if (event.keyCode === 13 && !event.shiftKey) {
         if (socket && socket.connected) {
             event.preventDefault();
             send("input-response", element.value);
-            HideInput(element.value)
+            HideInput(element.value);
         }
-        
+
         element.value = "";
     }
 }
