@@ -3,11 +3,11 @@
 using namespace lexer;
 
 #define KEYWORD_REGEX R"(set|to|when|do|otherwise|loop|times)"
-#define IDENTIFIER_REGEX R"((out|in|to-number|to-text)|[a-zA-Z_-][a-zA-Z0-9_-]*)"
-#define LITERAL_REGEX R"(no|yes|[-+]?\d+|\"(?:\\.|[^\"])*\")"
-#define OPERATOR_REGEX R"([><=+\-*/])"
+#define IDENTIFIER_REGEX R"((out|in|to-number|to-text)|[a-zA-Z][a-zA-Z0-9_-]*)"
+#define LITERAL_REGEX R"(no|yes|\d+|\"(?:\\.|[^\"])*\")"
+#define OPERATOR_REGEX R"([><=+\-*\/])"
 #define PUNCTUATION_REGEX R"([\{\}\(\)])"
-#define COMMENT_REGEX R"(\/\/[^\n]*)"
+#define COMMENT_REGEX R"(\/\/.*)"
 #define FULL_REGEX "(" COMMENT_REGEX "|" IDENTIFIER_REGEX "|" KEYWORD_REGEX "|" LITERAL_REGEX "|" OPERATOR_REGEX "|" PUNCTUATION_REGEX "|[^a-zA-Z0-9\\s])"
 
 map<string, TokenType> keywords {

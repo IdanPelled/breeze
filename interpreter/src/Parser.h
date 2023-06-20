@@ -65,6 +65,9 @@ namespace parser
 
 	struct MulExp {
 		NumberExp number;
+
+		// multiply pr divide
+		bool is_multiply;
 	};
 
 	struct NumExp {

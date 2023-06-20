@@ -92,7 +92,9 @@ NumberExp Parser::parseNumberExp() {
 MulExp Parser::parseMulExp() {
 	MulExp ret;
 
-	expect_token(lexer::TokenType::MULTIPLY);
+	lexer::Token tk = expect_token({lexer::TokenType::MULTIPLY, lexer::TokenType::DIVIDE});
+
+	ret.is_multiply = tk.type == lexer::TokenType::MULTIPLY;
 	ret.number = parseNumberExp();
 
 	return ret;
@@ -104,7 +106,10 @@ NumExp Parser::parseNumExp() {
 
 	ret.number = parseNumberExp();
 
-	while (tokens[index].type == lexer::TokenType::MULTIPLY)
+	while (
+		tokens[index].type == lexer::TokenType::MULTIPLY
+		|| tokens[index].type == lexer::TokenType::DIVIDE
+	)
 		muls.push_back(parseMulExp());
 
 	ret.multiplys = muls;

@@ -28,7 +28,7 @@ int Interpreter::interprerNumberExp(parser::NumberExp exp) {
 	case parser::NumberType::Func:
 		ret = interprerValueFunctionCall(*(exp.func_value));
 		if (ret.type != lexer::VarType::Number)
-			throw std::invalid_argument(
+			throw std::runtime_error(
 				"Runtime error: Arithmetic operation must be on numbers, but Value function returned a non-numbers value"
 			);
 
@@ -41,7 +41,7 @@ int Interpreter::interprerNumberExp(parser::NumberExp exp) {
 			var = get_var(exp.token_value.value);
 			
 			if (var.type != lexer::VarType::Number)
-				throw std::invalid_argument("Arithmetic expression can use only variable of type number");
+				throw std::runtime_error("Arithmetic expression can use only variable of type number");
 			
 			return var.number_val;
 
@@ -68,10 +68,23 @@ int Interpreter::interprerPlusExp(parser::PlusExp exp) {
 
 
 int Interpreter::interprerNumExp(parser::NumExp exp) {
+	int tmp;
 	int ret = interprerNumberExp(exp.number);
 
-	for (parser::MulExp mul : exp.multiplys)
-		ret *= interprerMulExp(mul);
+	for (parser::MulExp mul : exp.multiplys) {
+		tmp = interprerMulExp(mul);
+		
+		if (mul.is_multiply)
+			ret *= tmp;
+
+		else {
+			if (tmp == 0)
+				throw std::invalid_argument("Devision by Zero");				
+			
+			ret /= tmp;			
+		}
+			
+	}
 
 	return ret;
 }
