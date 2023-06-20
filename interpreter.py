@@ -48,10 +48,8 @@ def run_code(code: str, token: str) -> Generator[Tuple[str, str], None, bool]:
     )
 
     connections.update({token: process})
-    return_status_code = process.poll()
-    flag = True
 
-    while flag:
+    while process.poll() is None:
         # Check if there is output available to read
         readable, _, _ = select.select([process.stdout, process.stderr], [], [], 0)
 
@@ -64,17 +62,20 @@ def run_code(code: str, token: str) -> Generator[Tuple[str, str], None, bool]:
                 error = stream.readline()
                 yield None, error
         
-        flag = process.poll() is None
 
     # Read any remaining output after process completion
     output = process.stdout.read()
     error = process.stderr.read()
-    yield output, error
+    
+    if output or error:
+        yield output, error
     
     yield None, None
+    
     if token in connections:
         del connections[token]
-    yield return_status_code == 0
+    
+    yield process.returncode == 0
 
 
 def handle_out(message: str):
@@ -139,7 +140,7 @@ def execute_code(code, execution_token):
         None
     """
     
-    # time.sleep(1)
+    time.sleep(0.5)
     generator = run_code(code, execution_token)
     for out, error in generator:
         
