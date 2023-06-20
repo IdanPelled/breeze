@@ -76,17 +76,17 @@ NumberExp Parser::parseNumberExp() {
 	if (tokens[index].type == lexer::TokenType::VALUE_FUNCTION) {
 		ret.func_value = new FunctionCall(parseFunctionCall());
 		ret.type = NumberType::Func;
+		return ret;
 	}
 	
-	else {
-		ret.type = NumberType::Token;
-		ret.token_value = expect_token({
-			lexer::TokenType::NUMBER_LITERAL,
-			lexer::TokenType::VARIABLE,
-		});  
-	}
+	ret.type = NumberType::Token;
+	ret.token_value = expect_token({
+		lexer::TokenType::NUMBER_LITERAL,
+		lexer::TokenType::VARIABLE,
+	});
 
 	return ret;
+	
 }
 
 MulExp Parser::parseMulExp() {

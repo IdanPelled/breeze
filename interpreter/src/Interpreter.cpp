@@ -29,7 +29,7 @@ int Interpreter::interprerNumberExp(parser::NumberExp exp) {
 		ret = interprerValueFunctionCall(*(exp.func_value));
 		if (ret.type != lexer::VarType::Number)
 			throw std::runtime_error(
-				"Runtime error: Arithmetic operation must be on numbers, but Value function returned a non-numbers value"
+				"Arithmetic operation must be on numbers, but Value function returned a non-numbers value"
 			);
 
 		return ret.number;
@@ -49,11 +49,11 @@ int Interpreter::interprerNumberExp(parser::NumberExp exp) {
 			return stoi(exp.token_value.value);
 		
 		default:
-			throw std::invalid_argument("Syntax Error: invalid token");
+			throw std::invalid_argument("Syntax Error: invalid token 1");
 		}
 
 	default:
-		throw std::invalid_argument("Syntax Error: invalid token");
+		throw std::invalid_argument("Syntax Error: invalid token 2");
 	}
 }
 
@@ -110,10 +110,10 @@ int Interpreter::interprerArithmeticExp(parser::ArithmeticExp exp)
 parser::ReturnType Interpreter::interprerExpression(parser::Expression exp) {
 	parser::ReturnType ret;
 	parser::Variable var;
-
 	switch (exp.type)
 	{
 	case parser::Type::IDENTIFIER:
+	
 		var = get_var(exp.identifier.value);
 
 		switch (var.type)
@@ -298,7 +298,9 @@ map<string, lexer::VarType> get_function(const string& name) {
 
 void Interpreter::interprerAssignment(parser::AssignmentExp exp) {
 	parser::Variable var;
+	string name;
 	var.name = exp.identifier.value;
+
 	switch (exp.type)
 	{
 	case parser::Type::INTEGER:
@@ -317,26 +319,9 @@ void Interpreter::interprerAssignment(parser::AssignmentExp exp) {
 		break;
 
 	case parser::Type::IDENTIFIER:
-		switch (get_var(exp.value.identifier.value).type)
-		{
-		case lexer::VarType::Number:
-			var.number_val = interprerArithmeticExp(exp.value.math_exp);
-			var.type = lexer::VarType::Number;
-			break;
-
-		case lexer::VarType::Text:
-			var.text_val = exp.value.string.value;
-			var.type = lexer::VarType::Text;
-			break;
-
-		case lexer::VarType::Boolean:
-			var.boolean_val = interprerBoolExp(exp.value.boolean);
-			var.type = lexer::VarType::Boolean;
-			break;
-
-		default:
-			break;
-		}
+		name = var.name;
+		var = get_var(exp.value.identifier.value);
+		var.name = name;
 		break;
 
 	case parser::Type::FUNCTION:
