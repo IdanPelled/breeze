@@ -108,11 +108,11 @@ void Lexer::tokenize(vector<Token>& tokens, const string& input) {
         if (std::regex_match(token, keywordRegex)) {
             t.category = TokenCategory::KEYWORD;
 
-        } else if (std::regex_match(token, identifierRegex)) {
-            t.category = TokenCategory::IDENTIFIER;
-
         } else if (std::regex_match(token, literalRegex)) {
             t.category = TokenCategory::LITERAL;
+
+        } else if (std::regex_match(token, identifierRegex)) {
+            t.category = TokenCategory::IDENTIFIER;
 
         } else if (std::regex_match(token, operatorRegex)) {
             t.category = TokenCategory::OPERATOR;
