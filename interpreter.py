@@ -1,3 +1,4 @@
+import select
 import subprocess
 import time
 from typing import Generator, Tuple
@@ -51,14 +52,24 @@ def run_code(code: str, token: str) -> Generator[Tuple[str, str], None, bool]:
     flag = True
 
     while flag:
-        output = process.stdout.readline()
-        error = process.stderr.readline()
-        
-        if output or error:
-            yield output, error
+        # Check if there is output available to read
+        readable, _, _ = select.select([process.stdout, process.stderr], [], [], 0)
 
-        return_status_code = process.poll()
-        flag = output != '' or error != '' or process.poll() is None
+        for stream in readable:
+            if stream is process.stdout:
+                output = stream.readline()
+                yield output, None
+
+            elif stream is process.stderr:
+                error = stream.readline()
+                yield None, error
+        
+        flag = process.poll() is None
+
+    # Read any remaining output after process completion
+    output = process.stdout.read()
+    error = process.stderr.read()
+    yield output, error
     
     yield None, None
     if token in connections:
@@ -128,7 +139,7 @@ def execute_code(code, execution_token):
         None
     """
     
-    time.sleep(0.1)
+    # time.sleep(1)
     generator = run_code(code, execution_token)
     for out, error in generator:
         
@@ -140,4 +151,4 @@ def execute_code(code, execution_token):
                 handle_error(error)
             
         else:
-            handle_end_program(next(generator))
+            return handle_end_program(next(generator))

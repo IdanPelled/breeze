@@ -48,20 +48,26 @@ function SendCode() {
     socket = io();
 
     socket.on('output', (output) => {
+        console.info('output ' + output);
         Print[Level.info](output);
     });
 
     socket.on('input-request', (message) => {
+        console.info('input-request ' + message);
         ShowInput(message);
     });
 
     socket.on('end-program', (output) => {
+        console.info('end-program ' + output);
         EndProgram(output);
     });
 
     socket.on('error', (output) => {
+        console.info('error ' + output);
         Print[Level.error](output);
     });
+
+    console.info('connected');
 }
 
 /**
