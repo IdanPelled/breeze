@@ -7,6 +7,7 @@
 #include "Parser.h"
 #include "Built-in.h"
 
+#define MAX_STATEMENTS 1000
 
 namespace interpreter
 {

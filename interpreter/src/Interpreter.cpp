@@ -376,6 +376,11 @@ void Interpreter::interprerLoop(parser::LoopExp exp) {
 
 
 void Interpreter::interprerStatement(parser::Statement exp) {
+	
+	static int statement_count = 0;
+	if (statement_count++ > MAX_STATEMENTS)
+		throw std::runtime_error("Maximum resources where used ");
+	
 	switch (exp.type)
 	{
 	case parser::StatementType::ASSIGNMENT_TYPE:
