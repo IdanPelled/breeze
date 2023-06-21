@@ -1,4 +1,10 @@
+import hashlib
+from logging import getLogger
+from flask import request
+
 from factory import connections
+
+log = getLogger(__name__)
 
 def remove_token_prefix(token):
     """
@@ -17,6 +23,7 @@ def remove_token_prefix(token):
         return token[len(prefix):]
     
     else:
+        log.info("Auth Error: invalid token - missing prifix")
         return ""
 
 
@@ -34,14 +41,34 @@ def predicate(func):
     def decorator(data):
         plain_token = data.get("token")
         if not plain_token:
-            print("Auth Error: missing token")
+            log.info("Auth Error: missing token")
             return
-        
-        process = connections.get(remove_token_prefix(plain_token))
+
+        token = remove_token_prefix(plain_token)
+        if (token != hash_ip(request.remote_addr)):
+            log.info("Auth Error: invalid token - potential of session hijacking")
+            return
+
+        process = connections.get(token)
         if not process:
-            print("Auth Error: invalid token")
+            log.info("Auth Error: invalid token - unregistered token")
             return
         
         return func(process, data["payload"])
 
     return decorator
+
+
+def hash_ip(ip: str) -> str:
+    """Hashes the given IP address using SHA256 algorithm.
+
+    Args:
+        ip (str): The IP address to hash.
+
+    Returns:
+        str: The hashed IP address in hexadecimal format.
+    """
+    
+    sha256_hash = hashlib.sha256()
+    sha256_hash.update(ip.encode('utf-8'))
+    return sha256_hash.hexdigest()

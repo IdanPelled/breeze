@@ -3,6 +3,7 @@ import threading
 from flask import request, render_template, Blueprint, make_response, send_file
 
 from interpreter import execute_code
+from utils import hash_ip
 
 
 routes_app = Blueprint('routes', __name__)
@@ -58,7 +59,7 @@ def execute():
 
     if request.cookies.get('execution_token') is None:
        
-        execution_token = hex(secrets.randbelow(2 ** 1000))
+        execution_token = hash_ip(request.remote_addr)
         execution_thread = threading.Thread(
             target=execute_code,
             args=(code, execution_token)
