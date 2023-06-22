@@ -388,12 +388,3 @@ namespace parser
 		vector<lexer::Token> tokens;
 	};
 }
-
-/**
- * Retrieves the name of a lexer token type based on its enum value.
- * 
- * @param value The lexer token type enum value.
- * @return The name of the token type as a string.
- * @note If the enum value is not found in the map, an empty string ("<unnamed token>") is returned.
- */
-std::string get_token_name(lexer::TokenType value);

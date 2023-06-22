@@ -49,11 +49,11 @@ int Interpreter::interprerNumberExp(parser::NumberExp exp) {
 			return stoi(exp.token_value.value);
 		
 		default:
-			throw std::invalid_argument("Syntax Error: invalid token 1");
+			throw std::invalid_argument("Syntax Error: invalid token");
 		}
 
 	default:
-		throw std::invalid_argument("Syntax Error: invalid token 2");
+		throw std::invalid_argument("Syntax Error: invalid token");
 	}
 }
 
@@ -173,7 +173,7 @@ bool Interpreter::evaluate_bool(string s) {
 
 bool evaluate_equal(parser::ReturnType left, parser::ReturnType right) {
 	if (left.type != right.type)
-		throw std::invalid_argument("Value error: Cant compare diffrent types");
+		throw std::invalid_argument("Cant compare diffrent types");
 
 	switch (left.type)
 	{
@@ -193,7 +193,7 @@ bool evaluate_equal(parser::ReturnType left, parser::ReturnType right) {
 
 bool evaluate_grater(parser::ReturnType left, parser::ReturnType right) {
 	if (left.type != right.type)
-		throw std::invalid_argument("Value error: Cant compare diffrent types");
+		throw std::invalid_argument("Cant compare diffrent types");
 
 	switch (left.type)
 	{
@@ -213,7 +213,7 @@ bool evaluate_grater(parser::ReturnType left, parser::ReturnType right) {
 
 bool evaluate_smaller(parser::ReturnType left, parser::ReturnType right) {
 	if (left.type != right.type)
-		throw std::invalid_argument("Value error: Cant compare diffrent types");
+		throw std::invalid_argument("Cant compare diffrent types");
 
 	switch (left.type)
 	{
@@ -348,7 +348,7 @@ void Interpreter::interprerAssignment(parser::AssignmentExp exp) {
 		break;
 
 	default:
-		throw std::invalid_argument("Syntax error 5");
+		throw std::invalid_argument("Syntax error");
 	}
 
 	set_var(var);
@@ -379,7 +379,7 @@ void Interpreter::interprerStatement(parser::Statement exp) {
 	
 	static int statement_count = 0;
 	if (statement_count++ > MAX_STATEMENTS)
-		throw std::runtime_error("Maximum resources where used ");
+		throw std::runtime_error("Maximum resources where used");
 	
 	switch (exp.type)
 	{
@@ -446,7 +446,7 @@ void Interpreter::interprerActionFunctionCall(parser::FunctionCall exp) {
 	// else if ( ) { }
 	
 	throw std::invalid_argument(
-		"Value error: \"" + exp.name + "\" is not a built in function"
+		"\"" + exp.name + "\" is not a built in function"
 	);
 }
 
@@ -478,7 +478,7 @@ parser::ReturnType Interpreter::interprerValueFunctionCall(
 	}
 
 	throw std::invalid_argument(
-		"Value error: \"" + exp.name + "\" is not a built in function"
+		"\"" + exp.name + "\" is not a built in function"
 	);
 
 }

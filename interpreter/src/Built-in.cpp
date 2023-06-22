@@ -21,9 +21,6 @@ void output(const parser::ReturnType& var) {
             else
                 PRINT("no");
             break;
-        
-        default:
-            throw std::invalid_argument("Syntax error");
 
     }
     std::cout << std::flush;

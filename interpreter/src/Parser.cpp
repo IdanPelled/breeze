@@ -2,39 +2,6 @@
 
 using namespace parser;
 
-string get_token_name(lexer::TokenType value) {
-	map<string, lexer::TokenType> tokenMap = {
-		{"{", lexer::TokenType::OPEN},
-		{"}", lexer::TokenType::CLOSE},
-		{"(", lexer::TokenType::CALL_OPEN},
-		{")", lexer::TokenType::CALL_CLOSE},
-		{"when", lexer::TokenType::WHEN},
-		{"do", lexer::TokenType::DO},
-		{"otherwise", lexer::TokenType::OTHERWISE},
-		{"loop", lexer::TokenType::LOOP},
-		{"times", lexer::TokenType::TIMES},
-		{"variable", lexer::TokenType::VARIABLE},
-		{"bool literal", lexer::TokenType::BOOLEAN_LITERAL},
-		{"text literal", lexer::TokenType::TEXT_LITERAL},
-		{"number literal", lexer::TokenType::NUMBER_LITERAL},
-		{"set", lexer::TokenType::SET},
-		{"to", lexer::TokenType::TO},
-		{"+", lexer::TokenType::PLUS},
-		{"-", lexer::TokenType::MINUS},
-		{"*", lexer::TokenType::MULTIPLY},
-		{"=", lexer::TokenType::EQUAL},
-		{">", lexer::TokenType::GREATER},
-		{"<", lexer::TokenType::SMALLER},
-		{"<end of file>", lexer::TokenType::END_OF_TOKENS},
-	};
-
-    for (const auto& pair : tokenMap) {
-        if (pair.second == value) {
-            return pair.first;
-        }
-    }
-    return "<unnamed token>"; // Return an empty string if the enum value is not found in the map
-}
 
 inline lexer::Token Parser::next_token() {
 	return tokens[index++];
@@ -42,13 +9,9 @@ inline lexer::Token Parser::next_token() {
 
 lexer::Token Parser::expect_token(vector<lexer::TokenType> types) {
 	lexer::Token tk = next_token();
-	vector<string> names = {};
 	bool valid = false;
 
 	for (lexer::TokenType type: types) {
-		string token_name = get_token_name(type);
-		names.push_back(token_name);
-		
 		if (tk.type == type)
 			valid = true;
 	}
