@@ -44,6 +44,7 @@ namespace lexer
 		TIMES,
 		SET,
 		TO,
+		WHILE,
 
 		// Punctuation
 		OPEN,

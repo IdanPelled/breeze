@@ -2,7 +2,7 @@
 
 using namespace lexer;
 
-#define KEYWORD_REGEX R"(set|to|when|do|otherwise|loop|times)"
+#define KEYWORD_REGEX R"(set|to|when|do|otherwise|loop|times|while)"
 #define IDENTIFIER_REGEX R"((out|in|to-number|to-text)|[a-zA-Z][a-zA-Z0-9_-]*)"
 #define LITERAL_REGEX R"(no|yes|\d+|\"(?:\\.|[^\"])*\")"
 #define OPERATOR_REGEX R"([><=+\-*\/])"
@@ -18,6 +18,7 @@ map<string, TokenType> keywords {
     {"times", TokenType::TIMES},
     {"set", TokenType::SET},
     {"to", TokenType::TO},
+    {"while", TokenType::WHILE},
 };
 
 map<string, TokenType> operators {

@@ -44,13 +44,27 @@ parser::ReturnType input(const parser::ReturnType& message) {
 }
 
 bool is_numeric(const string& str) {
-    for (char c : str) {
-        if (!std::isdigit(c)) {
+    if (str.empty()) {
+        return false;
+    }
+    
+    size_t start_pos = 0;
+    if (str[0] == '-') {
+        if (str.length() == 1) {
+            return false;
+        }
+        start_pos = 1;
+    }
+    
+    for (size_t i = start_pos; i < str.length(); ++i) {
+        if (!std::isdigit(str[i])) {
             return false;
         }
     }
+    
     return true;
 }
+
 
 parser::ReturnType to_number(const parser::ReturnType& text_number) {
     if (text_number.type != lexer::VarType::Text)

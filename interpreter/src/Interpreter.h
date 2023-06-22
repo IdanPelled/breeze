@@ -250,6 +250,18 @@ namespace interpreter
 
 
 		/**
+		 * Interprets a while expression.
+		 *
+		 * This function interprets the given WhileExp object representing a while expression.
+		 * It evaluates the boolean expression in the "exp" field using the interpretBoolExp() function.
+		 * While the boolean expression evaluates to true, it interprets and executes the "while_block".
+		 *
+		 * @param exp The WhileExp object representing the while expression.
+		 */
+		void interprerWhile(parser::WhileExp exp);
+
+
+		/**
 		 * Interprets a loop expression.
 		 *
 		 * This function interprets the given LoopExp object representing a loop expression.

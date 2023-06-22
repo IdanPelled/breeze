@@ -7,7 +7,7 @@ CodeMirror.defineSimpleMode("pseudo", {
         { regex: /\/\/.*/, token: "comment" }, // Match comments starting with "//"
         { regex: /(?:no|yes)\b/, token: "atom" },
         { regex: /(?:out|in|to-number|to-text)\b/, token: "def" },
-        { regex: /(?:set|to|when|do|otherwise|loop|times)\b/, token: "keyword" },
+        { regex: /(?:set|to|when|do|otherwise|loop|times|while)\b/, token: "keyword" },
         { regex: /[><=+\-*/]/, token: "operator" },
         { regex: /[\{\}\(\)]/, token: "punctuation" },
         { regex: /[^\s]+/, token: null }, // Match any remaining characters as null token

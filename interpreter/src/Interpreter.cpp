@@ -367,6 +367,14 @@ void Interpreter::interprerWhen(parser::WhenExp exp) {
 		interprerBlock(exp.otherwise_block);
 }
 
+void Interpreter::interprerWhile(parser::WhileExp exp) {
+	while(interprerBoolExp(exp.exp)) {
+		std::cout << "!" << std::endl;
+		interprerBlock(exp.while_block);
+	}
+}
+
+
 void Interpreter::interprerLoop(parser::LoopExp exp) {
 	size_t times = interprerArithmeticExp(exp.times);
 
@@ -389,6 +397,10 @@ void Interpreter::interprerStatement(parser::Statement exp) {
 
 	case parser::StatementType::WHEN_TYPE:
 		interprerWhen(exp.when_statement);
+		break;
+
+	case parser::StatementType::WHILE_TYPE:
+		interprerWhile(exp.while_statement);
 		break;
 
 	case parser::StatementType::LOOP_TYPE:

@@ -244,6 +244,10 @@ Statement Parser::parseStatement() {
 		ret.type = StatementType::LOOP_TYPE;
 		ret.loop_statement = parseLoopExp();
 		break;
+	case lexer::TokenType::WHILE:
+		ret.type = StatementType::WHILE_TYPE;
+		ret.while_statement = parseWhileExp();
+		break;
 	case lexer::TokenType::SET:
 		ret.type = StatementType::ASSIGNMENT_TYPE;
 		ret.assignment_statement = parseAssignmentExp();
@@ -282,6 +286,14 @@ BlockExp Parser::parseBlockExp() {
 	expect_token(lexer::TokenType::CLOSE);
 
 	return ret;
+}
+
+WhileExp Parser::parseWhileExp() {
+	WhileExp ret;
+	expect_token(lexer::TokenType::WHILE);
+	ret.exp = parseBoolExp();
+	expect_token(lexer::TokenType::DO);
+	ret.while_block = parseBlockExp();
 }
 
 WhenExp Parser::parseWhenExp() {

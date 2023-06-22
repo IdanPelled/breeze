@@ -29,6 +29,7 @@ namespace parser
 		ASSIGNMENT_TYPE,
 		WHEN_TYPE,
 		LOOP_TYPE,
+		WHILE_TYPE,
 		BLOCK_TYPE,
 		CALL_TYPE
 	};
@@ -139,6 +140,11 @@ namespace parser
 		BlockExp otherwise_block;
 	};
 
+	struct WhileExp {
+		BoolExp exp;
+		BlockExp while_block;
+	};
+
 	struct LoopExp {
 		ArithmeticExp times;
 		BlockExp loop_block;
@@ -147,6 +153,7 @@ namespace parser
 
 	struct Statement {
 		WhenExp when_statement;
+		WhileExp while_statement;
 		LoopExp loop_statement;
 		AssignmentExp assignment_statement;
 		BlockExp block_statement;
@@ -330,6 +337,18 @@ namespace parser
 		 * @return WhenExp - The parsed 'when' expression object.
 		 */
 		WhenExp parseWhenExp();
+
+		
+		/**
+		 * Parses a 'while' expression.
+		 *
+		 * This function parses a 'while' expression, which consists of a boolean expression,
+		 * followed by a boolean expression then a 'do' block. while the expression is yes,
+		 * the block will run in a loop
+		 *
+		 * @return WhileExp - The parsed 'while' expression object.
+		 */
+		WhileExp parseWhileExp();
 
 
         /**
