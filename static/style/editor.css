@@ -25,6 +25,14 @@ main {
     width: 30%;
 }
 
+#input-frame {
+    align-items: center;
+}
+
+#input-msg {
+    margin-right: 10px;
+}
+
 #output, #input-frame{
     margin: 10px;
 }
@@ -32,6 +40,7 @@ main {
 #input{
     resize: none;
     overflow: visible;
+    padding: 3px 7px 3px 7px;
 }
 
 #output p {

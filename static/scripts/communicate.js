@@ -147,7 +147,7 @@ function EndProgram(output) {
 function ShowInput(message) {
     console.info(message);
     document.getElementById("input-msg").textContent = message;
-    ToggleVisibility("input-frame", "block");
+    ToggleVisibility("input-frame", "flex");
 }
 
 /**
@@ -156,7 +156,7 @@ function ShowInput(message) {
  * @returns {void}
  */
 function HideInput(input) {
-    const msg = document.getElementById("input-msg").textContent + ": " + input;
+    const msg = document.getElementById("input-msg").textContent + input;
 
     document.getElementById("input-msg").textContent = "";
     ToggleVisibility("input-frame", "none");
