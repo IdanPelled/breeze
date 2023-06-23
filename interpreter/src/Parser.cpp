@@ -147,6 +147,7 @@ Expression Parser::parseExpression(bool is_operand = false) {
 	case lexer::TokenType::PLUS:
 	case lexer::TokenType::MINUS:
 	case lexer::TokenType::MULTIPLY:
+	case lexer::TokenType::DIVIDE:
 		index = i;
 		ret.type = Type::INTEGER;
 		ret.math_exp = parseArithmeticExp();

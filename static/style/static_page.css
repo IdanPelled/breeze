@@ -7,6 +7,7 @@ main {
 }
 
 #content {
+    margin-right: 70px;
     grid-column: 2;
     grid-row: 1;
 }
@@ -25,8 +26,13 @@ nav ul {
 nav li {
     margin-bottom: 10px;
 }
-  
+
+nav li li a{
+    font-weight:normal;
+    margin-left: 20px;
+}
 nav li a {
+    font-weight: bold;
     text-decoration: none;
     color: black;
     display: block;

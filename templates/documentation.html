@@ -12,31 +12,316 @@
 
 
 {% block nav %}
-  <li><a href="#installation">Installation and Setup</a></li>
-  <li><a href="#syntax">Syntax and Language Basics</a></li>
-  <li><a href="#core-concepts">Core Concepts and Functions</a></li>
-  <li><a href="#standard-library">Standard Library</a></li>
-  <li><a href="#error-handling">Error Handling and Debugging</a></li>
-  <li><a href="#examples">Examples and Tutorials</a></li>
-  <li><a href="#faq">Frequently Asked Questions</a></li>
-  <li><a href="#glossary">Glossary</a></li>
-  <li><a href="#support">Community and Support</a></li>
-  <li><a href="#updates">Versioning and Updates</a></li>
-  <li><a href="#legal">License and Legal Information</a></li>
+<ul>
+  <li><a href="#data-types">Data Types</a>
+    <ul>
+      <li><a href="#numbers">Numbers</a></li>
+      <li><a href="#text">Text</a></li>
+      <li><a href="#booleans">Booleans</a></li>
+    </ul>
+  </li>
+  <li><a href="#literals">Literals</a>
+    <ul>
+      <li><a href="#boolean-literals">Boolean Literals</a></li>
+      <li><a href="#number-literals">Number Literals</a></li>
+      <li><a href="#text-literals">Text Literals</a></li>
+    </ul>
+  </li>
+  <li><a href="#variables">Variables</a>
+    <ul>
+      <li><a href="#naming-variables">Naming Variables</a></li>
+      <li><a href="#assigning-values">Assigning Values</a></li>
+      <li><a href="#updating-values">Updating Values</a></li>
+      <li><a href="#using-variables">Using Variables</a></li>
+    </ul>
+  </li>
+  <li><a href="#operators">Operators</a>
+    <ul>
+      <li><a href="#arithmetic-operators">Arithmetic Operators</a></li>
+      <li><a href="#comparison-operators">Comparison Operators</a></li>
+    </ul>
+  </li>
+  <li><a href="#control-flow">Control Flow</a>
+    <ul>
+      <li><a href="#when-statement">When Statement</a></li>
+      <li><a href="#loop-statement">Loop Statement</a></li>
+      <li><a href="#while-statement">While Statement</a></li>
+    </ul>
+  </li>
+  <li><a href="#functions">Functions</a>
+    <ul>
+      <li><a href="#value-functions">Value Functions</a></li>
+      <li><a href="#action-functions">Action Functions</a></li>
+    </ul>
+  </li>
+  <li><a href="#examples">Examples</a>
+    <ul>
+      <li><a href="#age-verification">Age Verification</a></li>
+      <li><a href="#celsius-to-fahrenheit">Celsius to Fahrenheit Conversion</a></li>
+    </ul>
+  </li>
+  <li><a href="#installation">Installation and Setup</a>
+    <ul>
+      <li><a href="#online">Breeze Online</a></li>
+      <li><a href="#download">Download Breeze</a></li>
+    </ul>
+  </li>
+  <li><a href="#legal-information">Legal Information</a></li>
+</ul>
+
 {% endblock %}
 
 
 {% block content %}
-<h1>Welcome to the Breeze Programming Language Documentation</h1>
+<h1>Breeze Programming Documentation</h1>
 
-<p>Breeze is a fun, kid-friendly programming language. This documentation serves as a guide to help you get started with Breeze, learn its syntax and core concepts, and unleash your creativity by solving problems through coding.</p>
+<p>Breeze is a fun, kid-friendly programming language. This documentation serves as a guide to help you get started with Breeze, learn its syntax and core concepts, and unleash your creativity by solving problems through coding.</p><br><br>
+
+<section>
+  <h2 id="data-types">Data Types</h2>
+  <p>In programming, data types are like different categories or kinds of information that we can work with. They help us define and understand the type of data we are dealing with. Here are a few common data types:</p>
+  <ul>
+    <li id="numbers"><strong>Numbers:</strong> Numbers are used to represent numerical values. They are whole numbers (like <code class="language-breeze">5, -10, 100</code>). In programming, we use numbers for calculations, counting, and measuring things.</li>
+    <li id="text"><strong>Text or texts:</strong> Text or texts are used to represent sequences of characters, such as letters, words, or sentences. For example, your name, <code class="language-breeze">"Hello, World!", "I love coding"</code> are all examples of texts. We use text or texts to store and work with words, sentences, and any kind of textual information.</li>
+    <li id="booleans"><strong>Booleans:</strong> Booleans are a special data type that represent either true or false. It's like answering a yes-or-no question. For example, "Is it raining outside?" can be answered with either true (<code class="language-breeze">yes</code>, it's raining) or false (<code class="language-breeze">no</code>, it's not raining). Booleans are helpful when we want to make decisions in our programs or check if something is true or false.</li>
+  </ul>
+  <p>Why do we need data types? Well, imagine if you asked someone for their age, and they replied with "Elephant." That wouldn't make much sense, right? Data types help us make sure we're using and storing the right kind of information. They also determine how we can interact with that information. For example, we can add two numbers together or concatenate (join) two texts, but we can't add a number and a text together.</p>
+  <p>When we write programs, we use data types to define the kind of information we want to work with. We declare variables, which are like labeled containers that can hold different data types. For example, we might have a variable called <code class="language-breeze">"score"</code> that stores a number, or a variable called "name" that stores a text.</p>
+  <p>Understanding data types helps us write programs that make sense and work correctly. It's like organizing our thoughts and information in a way that the computer can understand and process.</p>
+</section>
+
+<section>
+  <h2 id="literals">Literals</h2>
+  <p>In Breeze, literals are fixed values that are directly written within the code and represent specific types of data. Here are the literals available in Breeze for the different data types:</p>
+  <h3 id="boolean-literals">Boolean Literals:</h3>
+  <ul>
+    <li><code class="language-breeze">no</code>: Represents the boolean value of "false."</li>
+    <li><code class="language-breeze">yes</code>: Represents the boolean value of "true."</li>
+  </ul>
+  <p>Boolean literals are used to express logical conditions or true/false values in Breeze.</p>
+  <h3 id="number-literals">Number Literals:</h3>
+  <p>Number literals in Breeze represent numeric values. They can be positive or negative integers without decimal places. Examples of number literals include <code class="language-breeze">0, 123, -5,</code> etc.</p>
+  <p>Number literals are used in mathematical calculations, comparisons, or whenever a numeric value is required.</p>
+  <h3 id="text-literals">Text Literals:</h3>
+  <p>Text literals in Breeze represent strings of characters or words. They are enclosed within double quotation marks ("). Examples of text literals include <code class="language-breeze">"Hello", "Breeze", "123",</code> etc.</p>
+  <p>Text literals are used for displaying messages, storing textual data, or providing prompts for user input.</p>
+  <p>These literals provide a way to express specific values directly in the code without the need for variables or calculations. They are useful for assigning fixed values or specifying conditions in your Breeze programs.</p>
+  <p>It's important to note that literals are different from variables. While literals represent fixed values, variables are used to store and manipulate data that can change during the execution of a program.</p>
+</section>
+
+<section>
+  <h2 id="variables">Variables</h2>
+  <p>In programming, variables are like labeled containers that can hold different types of information. They allow us to store and manipulate data in our programs. Just like in the real world, where you might have a box labeled "toys" to hold your toys or a jar labeled "cookies" to hold your cookies, variables in programming give us a way to store and refer to different pieces of information.</p>
+  <p>Here's how variables work:</p>
+  <ul>
+    <li id="naming-variables"><strong>Naming Variables:</strong> To use a variable, we give it a name that represents the information it will hold. For example, we might have a variable called <code class="language-breeze">"score"</code> to keep track of a player's score in a game.</li>
+    <li id="assigning-values"><strong>Assigning Values:</strong> We assign a value to a variable by using the "set" keyword followed by the variable name and the desired value. For example, we can assign the value <code class="language-breeze">10</code> to the variable <code class="language-breeze">"score"</code> to represent a starting score of 10.</li>
+    <li id="updating-values"><strong>Updating Values:</strong> As our program progresses, we can update the value of a variable by assigning it a new value. For example, if the player earns more points, we can assign a higher number to the "score" variable to reflect the updated score.</li>
+    <li id="using-variables"><strong>Using Variables:</strong> We can use the value stored in a variable in various ways throughout our program. We can perform calculations with it, display it on the screen, or use it to make decisions. Variables allow us to work with data dynamically and flexibly.</li>
+  </ul>
+  <p>Here's an example code snippet in Breeze that demonstrates the use of a variable:</p>
+  <pre><code class="language-breeze">set score to 10  // Declaration and assignment
+out("Your score is: " + score) // Output the value of the variable
+
+set score to score + 5 // Update the value of the variable by adding 5
+
+out("Your updated score is: " + score) // Output the updated value
+</code></pre>
+
+  <p>In this example, we declare a variable called "score" and assign it an initial value of 10. We then print the value of the variable using the <code class="language-breeze">out</code> function. Next, we update the value of the variable by adding 5 to it. Finally, we print the updated value of the variable. We will discuss the <code class="language-breeze">out</code> function, which is used for printing messages, in more detail later.</p>
+  <p>Variables are essential because they allow our programs to store and manipulate data dynamically. They make our programs more flexible, as we can easily change and update values as needed.</p>
+</section>
+
+<section>
+  <h2 id="operators">Operators</h2>
+  <p>In Breeze, operators are symbols or special characters that allow us to perform calculations and comparisons between values. They help us manipulate data and make decisions in our programs. Breeze supports the following operators:</p>
+  <h3 id="arithmetic-operators">Arithmetic Operators:</h3>
+  <ul>
+    <li><code class="language-breeze">Addition (+):</code> Adds two numbers together.</li>
+    <li><code class="language-breeze">Subtraction (-):</code> Subtracts one number from another.</li>
+    <li><code class="language-breeze">Multiplication (*):</code> Multiplies two numbers.</li>
+    <li><code class="language-breeze">Division (/):</code> Performs integer division, truncating any decimal portion.</li>
+  </ul>
+  <h3 id="comparison-operators">Comparison Operators:</h3>
+  <ul>
+    <li><code class="language-breeze">Equality (=):</code> Checks if two values are equal.</li>
+    <li><code class="language-breeze">Greater Than (&gt;):</code> Checks if the value on the left is greater than the value on the right.</li>
+    <li><code class="language-breeze">Less Than (&lt;):</code> Checks if the value on the left is less than the value on the right.</li>
+  </ul>
+  <p>These operators are used to perform various operations and comparisons within Breeze programs. They help us calculate results and compare values.</p>
+  <pre><code class="language-breeze">
+    set x to 5
+    set y to 3
+    set sum to x + y // Addition
+    set difference to x - y // Subtraction
+    set product to x * y // Multiplication
+    set quotient to x / y // Division (integer division)
+
+    out("Sum: " + sum)
+    out("Difference: " + difference)
+    out("Product: " + product)
+    out("Quotient: " + quotient)
+
+    set isGreater to x > y // Greater Than
+    set isLess to x < y // Less Than
+    set isEqual to x = y // Equality
+
+    out("Is x greater than y? " + isGreater)
+    out("Is x less than y? " + isLess)
+    out("Are x and y equal? " + isEqual)
+  </code></pre>
+
+  <p>In this example, we have two variables, x and y, assigned with values 5 and 3, respectively. We then use arithmetic operators to perform calculations. Then we use the <code class="language-breeze">out</code> function to display the values of these variables on the screen. Next, we use comparison operators to compare the values of x and y. Finally, we use the <code class="language-breeze">out</code> function again to display the results of these comparisons.</p>
+</section>
+
+<section>
+  <h2 id="control-flow">Control Flow</h2>
+  <p>In programming, control flow refers to the order in which instructions are executed in a program. It allows us to control the flow and behavior of our code based on different conditions. Control flow statements provide mechanisms for making decisions, repeating actions, and branching between different parts of the code.</p>
+  <p>By using control flow statements, we can make our programs more dynamic and responsive. They enable us to handle different scenarios and perform different actions based on specific conditions.</p>
+  <h3 id="when-statement">When Statement:</h3>
+  <p>The "when" statement in Breeze allows you to control the flow of your program based on certain conditions. It provides a way to execute a block of code only if a specified condition is true. Here's the syntax of the "when" statement in Breeze:</p>
+  <pre><code class="language-breeze">
+    when &lt;condition&gt;
+    do {
+        // Code to be executed if the condition is true
+    }
+    otherwise
+    do {
+        // Code to be executed if the condition is false
+    }
+  </code></pre>
+  <p>In the "when" statement, you specify a boolean expression within the angle braces (&lt;&gt;) as the condition. If the condition is true, the code inside the first "do" block will run. If the condition is false, the code inside the "otherwise" block will run. This allows you to perform different actions based on whether the condition is true or false.</p>
+  <h3 id="loop-statement">Loop Statement:</h3>
+  <p>The "loop" statement in Breeze allows you to repeat a block of code a specific number of times. You can specify the number of iterations using a numeric value or a variable. Here's the syntax of the "loop" statement in Breeze:</p>
+  <pre><code class="language-breeze">
+    loop &lt;number of iterations&gt; times
+    {
+        // Code to be repeated
+    }
+  </code></pre>
+  <p>You replace &lt;number of iterations&gt; with the desired value. The code inside the curly braces ({}) will be executed repeatedly for the specified number of iterations. This construct is useful when you need to perform a specific action multiple times.</p>
+  <h3 id="while-statement">While Statement:</h3>
+  <p>The "while" statement in Breeze allows you to repeatedly execute a block of code as long as a specified condition is true. Here's the syntax of the "while" statement in Breeze:</p>
+  <pre><code class="language-breeze">
+    while &lt;condition&gt;
+    {
+        // Code to be executed while the condition is true
+    }
+  </code></pre>
+  <p>The &lt;condition&gt; represents a boolean expression. As long as the condition remains true, the code inside the curly braces ({}) will be executed repeatedly. It's important to ensure that the condition eventually becomes false; otherwise, the loop will continue indefinitely, resulting in an infinite loop.</p>
+  <p>These control flow statements, namely "when," "loop," and "while," provide you with the flexibility to control the flow of your program and perform actions based on conditions or repetitive tasks.</p>
+</section>
+
+<section>
+  <h2 id="functions">Functions</h2>
+  <p>In programming, a function is a reusable block of code that performs a specific task or action. By encapsulating a set of instructions within a function, we can execute that code whenever needed by calling the function.</p>
+  <p>There are two types of functions in Breeze:</p>
+  <ul>
+    <li><strong>Value Functions:</strong> Value functions in Breeze are functions that return a value as their result. They are designed to perform calculations or transformations and provide the computed value back to the calling code. Examples of value functions include functions that perform mathematical calculations, convert data types, or retrieve data from variables.</li>
+    <li><strong>Action Functions:</strong> Action functions in Breeze do not return a value. Instead, they perform a specific action or task without producing a result that can be assigned or used further in the program. Action functions typically have side effects such as displaying output, modifying variables, or interacting with the user.</li>
+  </ul>
+  <p>Each function has the following elements:</p>
+  <ul>
+    <li><strong>Function Name:</strong> A function in Breeze has a name that uniquely identifies it. The name serves as a reference point to call the function from other parts of the program. It should be meaningful and indicative of the task or purpose the function performs.</li>
+    <li><strong>Parameters:</strong> Parameters, also known as arguments, are variables or values that a function can receive as input. They allow us to provide data to the function that it needs to perform its task. Parameters are defined within the parentheses after the function name. They act as placeholders for the values that will be passed into the function when it is called.</li>
+    <li><strong>Return Value (for value functions):</strong> A return value is the result or output produced by a function after executing its code. It allows a function to pass data back to the code that called it. In Breeze, some functions have a return value that can be assigned to a variable or used directly in expressions. The return value is specified using the "return" keyword within the function.</li>
+  </ul>
+  <p>In Breeze, there are several built-in functions available for performing various tasks. Let's go through each of the built-in functions, categorizing them into action and value functions, and explaining their purposes:</p>
+  <h3 id="action-functions">Action Functions:</h3>
+  <ul>
+    <li><strong>out:</strong> This function is used to display output or print a value to the user. It takes a single parameter and does not return a value. It is commonly used to show messages or results on the screen.</li>
+  </ul>
+  <h3 id="value-functions">Value Functions:</h3>
+  <ul>
+    <li><strong>in:</strong> The in function is used to retrieve input from the user. It takes a single parameter of type Text that prompts the user for input. It returns the user's input as a Text value.</li>
+    <li><strong>to-number:</strong> The to-number function converts a Text value representing a number into an actual numeric value of type Number. It takes a single parameter of type Text and returns the corresponding numeric value.</li>
+    <li><strong>to-text:</strong> The to-text function converts a numeric value of type Number into its textual representation of type Text. It takes a single parameter of type Number and returns the equivalent text representation.</li>
+  </ul>
+  <p>These built-in functions in Breeze provide essential functionality to interact with the user, display output, retrieve input, and perform data conversions. You can use them to enhance the interactivity and flexibility of your programs.</p>
+</section>
+
+<section>
+  <h2 id="examples">Examples</h2>
+
+    <h3 id="age-verification">Age Verification</h3>
+    <p>
+        This program asks the user to enter their age and displays a message based on whether the age is greater than 18.
+    </p>
+    <pre><code class="language-breeze">
+        // Set Text messages
+        set ok_msg to "Enter the Bar"
+        set err_msg to "Leave now"
+
+        // Input the age and convert to number
+        set age to to-number(in("Enter age: "))
+
+        // Check if the age is valid
+        // And output the correct message
+        when age > 18
+        do {     
+            out(ok_msg)
+        }
+        otherwise
+        do {
+            out(err_msg)
+        }
+    </code></pre>
+    <p>
+        In this code, we have a program that verifies the age of a user. It prompts the user to enter their age and displays a message based on whether the entered age is greater than 18.
+        <br>
+        The program starts by setting up two text messages: <code class="language-breeze">ok_msg</code> is set to "Enter the Bar", and <code class="language-breeze">err_msg</code> is set to "Leave now". These messages will be displayed depending on the age entered.
+        <br>
+        Next, the program asks the user to enter their age using the <code class="language-breeze">in()</code> function. The inputted value is then converted to a number using the <code class="language-breeze">to-number()</code> function, and the result is stored in the <code class="language-breeze">age</code> variable.
+        <br>
+        After that, the program checks if the age is greater than 18 using the <code class="language-breeze">when</code> statement. If the condition is true, it executes the code inside the curly braces after <code class="language-breeze">do</code>, which in this case is <code class="language-breeze">out(ok_msg)</code>. This will display the message "Enter the Bar".
+        <br>
+        If the age is not greater than 18, the program executes the code inside the curly braces after <code class="language-breeze">otherwise</code>, which is <code class="language-breeze">out(err_msg)</code>. This will display the message "Leave now".
+        <br>
+        Overall, this code demonstrates a simple age verification system that provides different messages based on the entered age.
+    </p>
+
+    <br><br><br><br>
+    <h3 id="celsius-to-fahrenheit">Celsius to Fahrenheit Conversion</h3>
+    <p>
+        This program prompts the user to enter a temperature in Celsius, converts it to Fahrenheit, and outputs the converted temperature.
+    </p>
+    <pre><code class="language-breeze">
+        // Prompt the user to enter temperature in Celsius
+        set celsius_temp to to-number(in("Enter temperature in Celsius: "))
+
+        // Convert Celsius to Fahrenheit
+        set fahrenheit_temp to celsius_temp * 9 / 5 + 32
+
+        // Output the converted temperature in Fahrenheit
+        out("Temperature in Fahrenheit: ")
+        out(fahrenheit_temp)
+    </code></pre>
+    <p>
+        In this code, we have a program that converts a temperature from Celsius to Fahrenheit. It prompts the user to enter a temperature in Celsius, performs the conversion, and then outputs the converted temperature in Fahrenheit.
+        <br>
+        The program starts by using the <code class="language-breeze">in()</code> function to ask the user to enter a temperature in Celsius. The inputted value is then converted to a number using the <code class="language-breeze">to-number()</code> function, and the result is stored in the variable <code class="language-breeze">celsius_temp</code>.
+        <br>
+        Next, the program performs the conversion from Celsius to Fahrenheit. It multiplies the <code class="language-breeze">celsius_temp</code> by 9, divides the result by 5, and adds 32. The calculated Fahrenheit temperature is stored in the variable <code class="language-breeze">fahrenheit_temp</code>.
+        <br>
+        Finally, the program outputs the converted temperature in Fahrenheit. It uses the <code class="language-breeze">out()</code> function to display the text "Temperature in Fahrenheit: ", followed by the value of the <code class="language-breeze">fahrenheit_temp</code> variable.
+        <br>
+        Overall, this code demonstrates a simple temperature conversion from Celsius to Fahrenheit. It asks the user for the temperature in Celsius, performs the conversion, and outputs the result in Fahrenheit.
+    </p>
+</section>
+
+<section>
+  <h2 id="legal-information">Legal Information</h2>
+  <p>
+    This project is intended for educational purposes only. It is not meant to be used in production or commercial environments. The creator of this project assumes no responsibility or liability for any damages, losses, or consequences arising from the use or misuse of the project. Users are advised to exercise caution and use the project at their own risk.
+  </p>
+</section>
 
 <section>
   <h2 id="installation">Installation and Setup</h2>
 
 
   <p>Follow these steps to install and set up Breeze:</p>
-  <h3>Breeze Online</h3>
+  <h3 id="online">Breeze Online</h3>
   <ol>
     <li>
       No installation is required on your local machine.
@@ -50,7 +335,7 @@
   </ol>
 
   <br>
-  <h3>Download Breeze</h3>
+  <h3 id="download">Download Breeze</h3>
   <ol>
     <li>
       Make sure you have the necessary dependencies and tools installed, such as a C++ compiler and build tools.
@@ -75,132 +360,6 @@
   
 </section>
 
-<section>
-  <h2 id="syntax">Syntax and Language Basics</h2>
-
-
-  <p>Breeze uses a simple and intuitive syntax designed for children. Here are the key components of Breeze syntax:</p>
-  <ul>
-    <li>Data types: ...</li>
-    <li>Variables: ...</li>
-    <li>Operators: ...</li>
-    <li>Control flow statements: ...</li>
-  </ul>
-</section>
-
-<section>
-  <h2 id="core-concepts">Core Concepts and Functions</h2>
-
-
-  <p>Breeze provides various core concepts and functions that are fundamental to programming. These include:</p>
-  <ul>
-    <li>Loops: ...</li>
-    <li>Conditionals: ...</li>
-    <li>Functions: ...</li>
-    <li>Data structures: ...</li>
-  </ul>
-</section>
-
-
-<section>
-  <h2 id="standard-library">Standard Library</h2>
-
-
-  <p>Breeze comes with a standard library that provides useful functions and modules. Here are some of the key functions available:</p>
-  <ul>
-    <li>Function 1: ...</li>
-    <li>Function 2: ...</li>
-    <li>Function 3: ...</li>
-  </ul>
-</section>
-
-<section>
-  <h2 id="error-handling">Error Handling and Debugging</h2>
-
-
-  <p>Learn how to handle errors and debug your Breeze code with these tips and techniques:</p>
-  <ul>
-    <li>Tip 1: ...</li>
-    <li>Tip 2: ...</li>
-    <li>Tip 3: ...</li>
-  </ul>
-</section>
-
-<section>
-  <h2 id="examples">Examples and Tutorials</h2>
-
-
-  <p>Get inspired and learn by example! Here are some code examples and tutorials that showcase Breeze's capabilities:</p>
-  <ul>
-    <li>Example 1: ...</li>
-    <li>Example 2: ...</li>
-    <li>Tutorial 1: ...</li>
-  </ul>
-</section>
-
-
-<section>
-  <h2 id="faq">Frequently Asked Questions</h2>
-
-
-  <p>Here are some common questions about Breeze:</p>
-  <ul>
-    <li>Question 1: ...</li>
-    <li>Question 2: ...</li>
-    <li>Question 3: ...</li>
-  </ul>
-</section>
-
-<h2 id="glossary">Glossary</h2>
-
-<section>
-  <p>Here are some important terms and definitions you may encounter while using Breeze:</p>
-  <dl>
-    <dt>Term 1:</dt>
-    <dd>Definition 1.</dd>
-    <dt>Term 2:</dt>
-    <dd>Definition 2.</dd>
-    <dt>Term 3:</dt>
-    <dd>Definition 3.</dd>
-  </dl>
-</section>
-
-
-<section>
-  <h2 id="support">Community and Support</h2>
-
-
-  <p>Join the Breeze community to connect with other users, share your projects, and seek help:</p>
-  <ul>
-    <li>Forum 1: ...</li>
-    <li>Forum 2: ...</li>
-    <li>Community Slack channel: ...</li>
-  </ul>
-</section>
-
-<section>
-  <h2 id="updates">Versioning and Updates</h2>
-
-
-  <p>Breeze is regularly updated with new features and improvements. Stay up to date with the latest releases and learn about version-specific changes:</p>
-  <ul>
-    <li>Version 1.0.0: ...</li>
-    <li>Version 1.1.0: ...</li>
-    <li>Version 2.0.0: ...</li>
-  </ul>
-</section>
-
-<section>
-  <h2 id="legal">License and Legal Information</h2>
-
-
-  <p>Breeze is licensed under the XYZ license. For more information about the terms of use and legal details, refer to the following resources:</p>
-  <ul>
-    <li>License file: ...</li>
-    <li>Terms of Use: ...</li>
-    <li>Copyright notice: ...</li>
-  </ul>
-</section>
 
 {% endblock %}
 

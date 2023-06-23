@@ -3,6 +3,12 @@
 
 {% block tmpl_head_script %}
   <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style/static_page.css') }}">
+  <link href="https://cdn.jsdelivr.net/npm/prismjs/themes/prism.css" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/prismjs/prism.js"></script>
+  
+  
+  <script src="{{ url_for('static', filename='scripts/prism-breeze.js') }}"></script>
+  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style/prism.css') }}">
   {% block head_script %}{% endblock %}
 {% endblock %}
 

@@ -1,0 +1,20 @@
+.token.operator {
+    background-color: transparent;
+  }
+
+.token.builtin {
+    color:purple;
+}
+
+:not(pre) .token {
+    font-size: smaller;
+}
+
+.token.literal-number, .token.literal-bool  {
+    color:green;
+}
+
+.token.literal-text {
+    color:crimson;
+}
+

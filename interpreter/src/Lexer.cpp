@@ -4,7 +4,7 @@ using namespace lexer;
 
 #define KEYWORD_REGEX R"(set|to|when|do|otherwise|loop|times|while)"
 #define IDENTIFIER_REGEX R"((out|in|to-number|to-text)|[a-zA-Z][a-zA-Z0-9_-]*)"
-#define LITERAL_REGEX R"(no|yes|\d+|\"(?:\\.|[^\"])*\")"
+#define LITERAL_REGEX R"(no|yes|-?\d+|\"(?:\\.|[^\"])*\")"
 #define OPERATOR_REGEX R"([><=+\-*\/])"
 #define PUNCTUATION_REGEX R"([\{\}\(\)])"
 #define COMMENT_REGEX R"(\/\/.*)"
