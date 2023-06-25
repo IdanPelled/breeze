@@ -1,7 +1,5 @@
 # Build the interpreter
-cd ./interpreter
 make
-cd ..
 
 # Run the server
 pip install -r requirements.txt
