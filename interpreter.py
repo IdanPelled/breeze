@@ -1,3 +1,4 @@
+from logging import getLogger
 import subprocess
 import time
 import threading
@@ -10,6 +11,7 @@ from factory import connections, socketio
 EXE_PATH = './interpreter/bin/breeze'
 INPUT_MESSAGE = "~<INPUT MESSAGE>~"
 
+log = getLogger(__name__)
 
 def read_output(proc: subprocess.Popen, messages: Queue, terminate_flag: threading.Event) -> None:
     """
@@ -78,8 +80,14 @@ def handle_end(proc: subprocess.Popen, errors: Queue):
         socketio.emit("end-program", "success")
     
     else:
-        socketio.emit("error", errors.get(block=False))
+        if not errors.empty():
+            socketio.emit("error", errors.get(block=False))
+        
+        else:
+            log.error("Missing error description for status code", proc.returncode)
+        
         socketio.emit("end-program", "error")
+
 
 
 def execute_code(code: str, token: str, terminate_flag: threading.Event) -> None:
@@ -110,7 +118,7 @@ def execute_code(code: str, token: str, terminate_flag: threading.Event) -> None
     output_thread.start()
     error_thread.start()
     
-    time.sleep(0.3)
+    time.sleep(0.5)
     while errors.empty() and (proc.poll() is None or not messages.empty()):
         
         if not messages.empty():
