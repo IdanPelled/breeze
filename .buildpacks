@@ -1,1 +1,1 @@
-file://./remote-build.sh
+https://github.com/kelonye/heroku-buildpack-make.git

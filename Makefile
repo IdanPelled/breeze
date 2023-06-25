@@ -3,10 +3,10 @@ CXX := g++
 CXXFLAGS := -std=c++11 -Wall -Wextra
 
 # Directories
-SRC_DIR := src
-OBJ_DIR := obj
-BIN_DIR := bin
-RELEASE_DIR := release
+SRC_DIR := interpreter/src
+OBJ_DIR := interpreter/obj
+BIN_DIR := interpreter/bin
+RELEASE_DIR := interpreter/release
 
 # Files
 EXECUTABLE := $(BIN_DIR)/breeze
@@ -16,6 +16,9 @@ ZIP_FILE := $(RELEASE_DIR)/breeze.zip
 
 # Default target
 all: $(EXECUTABLE) zip
+
+# Heroku target
+heroku: $(EXECUTABLE) zip
 
 # Rule to build the executable
 $(EXECUTABLE): $(OBJECTS)
@@ -37,4 +40,4 @@ zip:
 clean:
 	rm -rf $(OBJ_DIR) $(BIN_DIR) $(RELEASE_DIR)/*.zip
 
-.PHONY: all zip clean
+.PHONY: all zip clean heroku
