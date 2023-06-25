@@ -1,1 +1,1 @@
-web: gunicorn -k eventlet -w 1 run:app
+web: ./remote.sh && gunicorn -k eventlet -w 1 run:app
