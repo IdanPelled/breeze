@@ -1,6 +1,6 @@
 #include "Built-in.h"
 
-#define PRINT(x) std::cout << x << std::endl
+#define PRINT(x) std::cout << x << std::endl << std::flush
 #define INPUT_MESSAGE "~<INPUT MESSAGE>~"
 
 // Action Functions
@@ -23,7 +23,6 @@ void output(const parser::ReturnType& var) {
             break;
 
     }
-    std::cout << std::flush;
 
 }
 
@@ -38,7 +37,7 @@ parser::ReturnType input(const parser::ReturnType& message) {
     parser::ReturnType input;
     input.type = lexer::VarType::Text;
 
-    std::cout << INPUT_MESSAGE << message.text << std::endl;
+    PRINT(INPUT_MESSAGE << message.text);
     std::cin >> input.text;
     return input;
 }

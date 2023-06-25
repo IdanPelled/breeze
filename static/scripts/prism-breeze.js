@@ -3,6 +3,10 @@ Prism.languages.breeze = {
         pattern: /\/\/.*/,
         alias: 'comment'
     },
+    'literal-text': {
+        pattern: /"(?:\\.|[^"])*"/,
+        alias: 'literal-text'
+    },
     'literal-number': {
         pattern: /-?\d+/,
         alias: 'literal-number'
@@ -10,10 +14,6 @@ Prism.languages.breeze = {
     'literal-bool': {
         pattern: /no|yes/,
         alias: 'literal-bool'
-    },
-    'literal-text': {
-        pattern: /"(?:\\.|[^"])*"/,
-        alias: 'literal-text'
     },
     'built-in': {
         pattern: /out|in|to-number|to-text/,

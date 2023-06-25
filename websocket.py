@@ -53,6 +53,7 @@ def handle_connect():
     """
 
     log.info(f'Client connected {request.sid}')
+    
 
 
 @socketio.on('disconnect')

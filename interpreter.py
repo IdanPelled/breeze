@@ -1,7 +1,9 @@
-import select
 import subprocess
 import time
 from typing import Generator, Tuple
+import threading
+from queue import Queue
+import io
 
 from factory import connections, socketio
 
@@ -10,146 +12,97 @@ EXE_PATH = './interpreter/bin/breeze'
 INPUT_MESSAGE = "~<INPUT MESSAGE>~"
 
 
-def pass_input(process: subprocess.Popen, data: str) -> None:
+def read_output(proc: subprocess.Popen, messages: Queue) -> None:
     """
-    Passes the input data to the subprocess.
+    Reads the output from the subprocess and puts each line into the messages queue.
 
     Args:
-        process (subprocess.Popen): The subprocess to pass the input to.
-        data (str): The input data to be passed.
-
-    Returns:
-        None
+        proc (subprocess.Popen): The subprocess object.
+        messages (Queue): The queue to store the output messages.
     """
 
-    process.stdin.write(data + '\n')
-    process.stdin.flush()
+    with io.TextIOWrapper(proc.stdout, encoding='utf-8', line_buffering=True) as stdout_wrapper:
+        for line in iter(stdout_wrapper.readline, ''):
+            messages.put(line.rstrip())
 
 
-def run_code(code: str, token: str) -> Generator[Tuple[str, str], None, bool]:
+def handle_message(message: str):
     """
-    Runs the code using the interpreter subprocess.
+    Handles each message received from the subprocess.
 
     Args:
-        code (str): The code to be executed.
-        token (str): The token associated with the code execution.
-
-    Yields:
-        Tuple[str, str]: The output and error messages yielded during the code execution.
-        bool: The final success status of the code execution.
+        message (str): The message received from the subprocess.
     """
 
-    process = subprocess.Popen(
-        [EXE_PATH, code],
-        stdin=subprocess.PIPE,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
-        universal_newlines=True,
-    )
-
-    connections.update({token: process})
-
-    while process.poll() is None:
-        # Check if there is output available to read
-        readable, _, _ = select.select([process.stdout, process.stderr], [], [], 0)
-
-        for stream in readable:
-            if stream is process.stdout:
-                output = stream.readline()
-                yield output, None
-
-            elif stream is process.stderr:
-                error = stream.readline()
-                yield None, error
-        
-
-    # Read any remaining output after process completion
-    output = process.stdout.read()
-    error = process.stderr.read()
-    
-    if output or error:
-        yield output, error
-    
-    yield None, None
-    
-    if token in connections:
-        del connections[token]
-    
-    yield process.returncode == 0
-
-
-def handle_out(message: str):
-    """
-    Handles the output message received from the interpreter subprocess.
-
-    Args:
-        message (str): The output message.
-
-    Returns:
-        None
-    """
-
-    if (message.startswith(INPUT_MESSAGE)):
-        socketio.emit("input-request", message.replace(INPUT_MESSAGE, ""))
+    if message.startswith(INPUT_MESSAGE):
+        input_prompt = message.replace(INPUT_MESSAGE, "")
+        socketio.emit("input-request", input_prompt)
     
     else:
         socketio.emit("output", message)
 
 
-def handle_error(message: str):
+def handle_end(proc: subprocess.Popen):
     """
-    Handles the error message received from the interpreter subprocess.
+    Handles the end of the subprocess execution.
 
     Args:
-        message (str): The error message.
-
-    Returns:
-        None
+        proc (subprocess.Popen): The subprocess object.
     """
 
-    socketio.emit("error", message)
-
-
-def handle_end_program(success: bool):
-    """
-    Handles the end of the program execution.
-
-    Args:
-        success (bool): The success status of the program execution.
-
-    Returns:
-        None
-    """
-
-    if success:
+    if proc.returncode == 0:
         socketio.emit("end-program", "success")
     
     else:
+        socketio.emit("error", proc.stderr.readline().decode('utf-8'))
         socketio.emit("end-program", "error")
 
 
-def execute_code(code, execution_token):
+def execute_code(code: str, token: str) -> None:
     """
-    Executes the code and sends the output and error messages via SocketIO.
+    Executes the provided code using a subprocess.
 
     Args:
         code (str): The code to be executed.
-        execution_token (str): The token associated with the code execution.
+        token (str): A token to identify the execution.
 
-    Returns:
-        None
     """
-    
-    time.sleep(0.5)
-    generator = run_code(code, execution_token)
-    for out, error in generator:
-        
-        if out or error:
-            if out:
-                handle_out(out)
 
-            if error:
-                handle_error(error)
-            
-        else:
-            return handle_end_program(next(generator))
+    time.sleep(0.5)
+    proc = subprocess.Popen(
+        [EXE_PATH, code],
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        stdin=subprocess.PIPE,
+    )
+
+    connections.update({token: proc})
+    messages = Queue()
+
+    output_thread = threading.Thread(target=read_output, args=(proc, messages))
+    output_thread.start()
+
+    while proc.poll() is None or not messages.empty():
+        handle_message(messages.get())
+        time.sleep(0.05)
+
+    if token in connections:
+        del connections[token]
+
+    handle_end(proc)
+    output_thread.join()
+
+
+def pass_input(process: subprocess.Popen, data: str) -> None:
+    """
+    Passes input to the subprocess.
+
+    Args:
+        process (subprocess.Popen): The subprocess object.
+        data (str): The input data to be passed.
+
+    Note:
+        The subprocess should be waiting for an input prompt.
+    """
+    process.stdin.write((data + '\n').encode('utf-8'))
+    process.stdin.flush()

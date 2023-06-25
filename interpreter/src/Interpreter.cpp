@@ -369,7 +369,6 @@ void Interpreter::interprerWhen(parser::WhenExp exp) {
 
 void Interpreter::interprerWhile(parser::WhileExp exp) {
 	while(interprerBoolExp(exp.exp)) {
-		std::cout << "!" << std::endl;
 		interprerBlock(exp.while_block);
 	}
 }
@@ -525,6 +524,7 @@ int main(int argc, char** argv) {
 		
 		catch (const std::exception& e) {
 			std::cerr << e.what() << std::endl;
+			return 1;
 		}
 	}
 	return 1;
