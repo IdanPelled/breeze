@@ -60,9 +60,10 @@ def execute():
     if request.cookies.get('execution_token') is None:
        
         execution_token = hash_ip(request.remote_addr)
+        terminate_flag = threading.Event()
         execution_thread = threading.Thread(
             target=execute_code,
-            args=(code, execution_token)
+            args=(code, execution_token, terminate_flag)
         )
         execution_thread.start()
 
